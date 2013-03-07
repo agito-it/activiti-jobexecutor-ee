@@ -8,11 +8,17 @@
 		<relativePath>../activiti-jobexecutor-ee-parent</relativePath>
 	</parent>
 	<artifactId>activiti-jobexecutor-ee-api</artifactId>
-	<name>activiti JobExecutor Enterprise Edition API</name>
-	<description>activiti JobExecutor Enterprise Edition API</description>
+	<name>activiti JobExecutor EE API</name>
+	<description>activiti JobExecutor EE API</description>
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-engine</artifactId>
+			<version>${activiti.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>javaee</groupId>
 			<artifactId>javaee-api</artifactId>

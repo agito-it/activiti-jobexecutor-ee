@@ -21,6 +21,18 @@
 			<transaction-support>NoTransaction</transaction-support>
 			<reauthentication-support>false</reauthentication-support>
 		</outbound-resourceadapter>
+
+		<inbound-resourceadapter>
+			<messageadapter>
+				<messagelistener>
+					<messagelistener-type>org.agito.activiti.jobexecutor.api.JobExecutorDispatcher</messagelistener-type>
+					<activationspec>
+						<activationspec-class>org.agito.activiti.jobexecutor.impl.JobExecutorActivation</activationspec-class>
+					</activationspec>
+				</messagelistener>
+			</messageadapter>
+		</inbound-resourceadapter>
+
 	</resourceadapter>
 
 </connector>

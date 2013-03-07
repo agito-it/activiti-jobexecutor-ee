@@ -5,8 +5,8 @@
 	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>activiti JobExecutor Enterprise Edition Parent</name>
-	<description>activiti JobExecutor Enterprise Edition Parent</description>
+	<name>activiti JobExecutor EE Parent</name>
+	<description>activiti JobExecutor EE Parent</description>
 
 	<parent>
 		<groupId>de.agito.infra.dev</groupId>
@@ -19,8 +19,9 @@
 	</properties>
 
 	<modules>
-	    <module>../activiti-jobexecutor-ee-api</module>
+		<module>../activiti-jobexecutor-ee-api</module>
 		<module>../activiti-jobexecutor-ee-rar</module>
+		<module>../activiti-jobexecutor-ee-ear</module>
 	</modules>
 
 	<build>
@@ -28,17 +29,6 @@
 			<plugin>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>jrebel-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 

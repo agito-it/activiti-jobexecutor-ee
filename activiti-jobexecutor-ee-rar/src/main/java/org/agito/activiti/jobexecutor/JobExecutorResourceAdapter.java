@@ -7,12 +7,14 @@ import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAResource;
+
+import org.agito.activiti.jobexecutor.impl.JobExecutorActivation;
 
 public class JobExecutorResourceAdapter implements ResourceAdapter {
 
-	protected WorkManager workManager;
+	private BootstrapContext bootstrapCtx;
+	private JobExecutorActivation jobExecutorActivation;
 
 	/**
 	 * default constructor
@@ -23,24 +25,29 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 	@Override
 	public void start(BootstrapContext ctx) throws ResourceAdapterInternalException {
-		this.workManager = ctx.getWorkManager();
+		this.bootstrapCtx = ctx;
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
+		this.bootstrapCtx = null;
+	}
+
+	@Override
+	public void endpointActivation(MessageEndpointFactory mef, ActivationSpec activationSpec) throws ResourceException {
+		if (!JobExecutorActivation.class.isAssignableFrom(activationSpec.getClass()))
+			throw new ResourceException("Invalid activation spec type");
+		jobExecutorActivation = (JobExecutorActivation) activationSpec;
+		jobExecutorActivation.validate(); // jca contract
+		jobExecutorActivation.setMessageEndpointFactory(mef);
+	}
+
+	@Override
+	public void endpointDeactivation(MessageEndpointFactory mef, ActivationSpec activationSpec) {
+		jobExecutorActivation.cleanup();
 	}
 
 	/* unsupported operations */
-
-	@Override
-	public void endpointActivation(MessageEndpointFactory arg0, ActivationSpec arg1) throws ResourceException {
-		throw new NotSupportedException("EndpointActivation not supported");
-	}
-
-	@Override
-	public void endpointDeactivation(MessageEndpointFactory arg0, ActivationSpec arg1) {
-	}
 
 	@Override
 	public XAResource[] getXAResources(ActivationSpec[] arg0) throws ResourceException {
@@ -57,6 +64,16 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 	@Override
 	public int hashCode() {
 		return super.hashCode();
+	}
+
+	/* getter */
+
+	public BootstrapContext getBootstrapCtx() {
+		return bootstrapCtx;
+	}
+
+	public JobExecutorActivation getJobExecutorActivation() {
+		return jobExecutorActivation;
 	}
 
 }

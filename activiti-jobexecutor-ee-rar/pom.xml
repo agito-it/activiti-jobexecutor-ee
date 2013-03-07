@@ -8,8 +8,8 @@
 		<relativePath>../activiti-jobexecutor-ee-parent</relativePath>
 	</parent>
 	<artifactId>activiti-jobexecutor-ee-rar</artifactId>
-	<name>activiti JobExecutor Enterprise Edition Resource Adapter</name>
-	<description>activiti JobExecutor Enterprise Edition Resource Adapter</description>
+	<name>activiti JobExecutor EE Resource Adapter</name>
+	<description>activiti JobExecutor EE Resource Adapter</description>
 	<packaging>rar</packaging>
 
 	<properties>
@@ -23,12 +23,14 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>activiti-jobexecutor-ee-api</artifactId>
 			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-engine</artifactId>
 			<version>${activiti.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -76,11 +78,10 @@
 
 	<profiles>
 		<profile>
-			<id>jboss7-init</id>
+			<id>jboss7-setup</id>
 			<activation>
 				<property>
-					<name>initial</name>
-					<value>true</value>
+					<name>setup</name>
 				</property>
 			</activation>
 			<build>
@@ -89,24 +90,41 @@
 						<groupId>org.jboss.as.plugins</groupId>
 						<artifactId>jboss-as-maven-plugin</artifactId>
 						<version>7.3.Final</version>
-						<executions>
-							<execution>
-								<id>config</id>
-								<phase>test</phase>
-								<goals>
-									<goal>execute-commands</goal>
-								</goals>
-								<configuration>
-									<execCommands>
-										<batch>true</batch>
-										<commands>
-											<command>/subsystem=resource-adapters/resource-adapter=cps-process-activiti-jca:add(archive=cps-process-activiti-jca-0.0.1-SNAPSHOT.rar,transaction-support=NoTransaction)</command>
-											<command>/subsystem=resource-adapters/resource-adapter=cps-process-activiti-jca/connection-definitions=cps-process-activiti-jca:add(jndi-name="java:/eis/AJE",class-name="de.agito.cps.process.activiti.jca.AJEManagedConnectionFactory",enabled="true")</command>
-										</commands>
-									</execCommands>
-								</configuration>
-							</execution>
-						</executions>
+						<configuration>
+							<execCommands>
+								<batch>true</batch>
+								<commands>
+									<command>/subsystem=resource-adapters:add</command>
+									<command>/subsystem=resource-adapters/resource-adapter=activiti-jobexecutor-ee-rar-0.0.1-SNAPSHOT.rar:add(archive=activiti-jobexecutor-ee-rar-0.0.1-SNAPSHOT.rar,transaction-support=NoTransaction)</command>
+									<command>/subsystem=resource-adapters/resource-adapter=activiti-jobexecutor-ee-rar-0.0.1-SNAPSHOT.rar/connection-definitions=activiti-jobexecutor-ee:add(jndi-name="java:/env/ActivitiJobExecutor",class-name="org.agito.activiti.jobexecutor.JobExecutorManagedConnectionFactory",enabled="true")</command>
+								</commands>
+							</execCommands>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jboss7-cleanup</id>
+			<activation>
+				<property>
+					<name>cleanup</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jboss.as.plugins</groupId>
+						<artifactId>jboss-as-maven-plugin</artifactId>
+						<version>7.3.Final</version>
+						<configuration>
+							<execCommands>
+								<batch>true</batch>
+								<commands>
+									<command>/subsystem=resource-adapters/resource-adapter=activiti-jobexecutor-ee-jca:remove</command>
+								</commands>
+							</execCommands>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
@@ -128,7 +146,7 @@
 						<executions>
 							<execution>
 								<id>deploy</id>
-								<phase>test-compile</phase>
+								<phase>test</phase>
 								<goals>
 									<goal>deploy</goal>
 								</goals>
