@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.agito</groupId>
+	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>activiti JobExecutor Enterprise Edition Parent</name>
+	<description>activiti JobExecutor Enterprise Edition Parent</description>
+
+	<parent>
+		<groupId>de.agito.infra.dev</groupId>
+		<artifactId>super-pom</artifactId>
+		<version>0.1.2</version>
+	</parent>
+
+	<properties>
+		<activiti.version>5.11</activiti.version>
+	</properties>
+
+	<modules>
+	    <module>../activiti-jobexecutor-ee-api</module>
+		<module>../activiti-jobexecutor-ee-rar</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>jrebel-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<scm>
+		<connection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</connection>
+		<developerConnection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</developerConnection>
+		<url>http://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</url>
+	</scm>
+
+</project>
