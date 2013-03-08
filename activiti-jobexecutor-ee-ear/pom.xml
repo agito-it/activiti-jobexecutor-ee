@@ -13,11 +13,8 @@
 	<packaging>ear</packaging>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>activiti-jobexecutor-ee-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- <dependency> <groupId>${project.groupId}</groupId> <artifactId>activiti-jobexecutor-ee-api</artifactId> 
+			<version>${project.version}</version> </dependency> -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>activiti-jobexecutor-ee-rar</artifactId>

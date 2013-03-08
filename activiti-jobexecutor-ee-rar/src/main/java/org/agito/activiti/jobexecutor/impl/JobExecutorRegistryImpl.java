@@ -2,6 +2,7 @@ package org.agito.activiti.jobexecutor.impl;
 
 import javax.resource.ResourceException;
 
+import org.agito.activiti.JobExecutorEE;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.api.JobExecutorInfo;
 
@@ -20,6 +21,18 @@ public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 		if (this.managedConnection != null) {
 			this.managedConnection.closeHandle(this);
 		}
+	}
+
+	@Override
+	public void registerJobExecutor(JobExecutorEE jobExecutorEE) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void detachJobExecutor(JobExecutorEE jobExecutorEE) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

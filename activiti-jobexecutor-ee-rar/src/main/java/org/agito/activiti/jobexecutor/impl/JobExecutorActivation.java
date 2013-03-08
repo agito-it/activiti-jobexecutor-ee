@@ -1,6 +1,7 @@
 package org.agito.activiti.jobexecutor.impl;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -8,12 +9,13 @@ import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.resource.spi.work.WorkException;
+import javax.resource.spi.work.WorkRejectedException;
 
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.agito.activiti.jobexecutor.JobExecutorResourceAdapter;
 import org.agito.activiti.jobexecutor.api.JobExecutorDispatcher;
 
-public class JobExecutorActivation implements ActivationSpec {
+public class JobExecutorActivation implements JobExecutorDispatcher, ActivationSpec {
 
 	private JobExecutorResourceAdapter resourceAdapter;
 	private MessageEndpointFactory messageEndpointFactory;
@@ -29,13 +31,20 @@ public class JobExecutorActivation implements ActivationSpec {
 		}
 	}
 
+	@Override
 	public void dispatch(String jobId, CommandExecutor commandExecutor) {
 		try {
 			// doWork(..) is synchronous >> blocks until the Work instance completes
 			resourceAdapter.getBootstrapCtx().getWorkManager()
 					.doWork(new JobExecutorDispatcherWork(messageEndpointFactory, DISPATCH, jobId, commandExecutor));
 		} catch (WorkException e) {
-			throw new RuntimeException(e); // TODO unwrap WorkCompletedException
+			if (e instanceof WorkRejectedException) {
+				throw new RejectedExecutionException(e);
+			} else {
+				throw new RuntimeException(e);
+				// TODO maybe unwrap WorkCompletedException
+			}
+
 		}
 	}
 
