@@ -6,9 +6,9 @@ import org.agito.activiti.JobExecutorEE;
 
 public interface JobExecutorRegistry {
 
-	public void registerJobExecutor(JobExecutorEE jobExecutorEE);
+	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException;
 
-	public void detachJobExecutor(JobExecutorEE jobExecutorEE);
+	public void detachJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException;
 
 	public void close() throws ResourceException;
 

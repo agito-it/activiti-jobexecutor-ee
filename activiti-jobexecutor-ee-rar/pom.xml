@@ -40,6 +40,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jboss.as</groupId>
+			<artifactId>jboss-as-connector</artifactId>
+			<version>7.1.2.Final</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- test deps -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -63,6 +70,18 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifestEntries>
+							<Dependencies>org.jboss.as.connector</Dependencies>
+						</manifestEntries>
+					</archive>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
