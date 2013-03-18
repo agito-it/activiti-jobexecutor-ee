@@ -93,7 +93,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 	/* work */
 
 	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
-		jobAcquisitionWork = new JobAcquisitionWork(jobExecutorEE, jobExecutorActivation, bootstrapCtx.getWorkManager());
+		jobAcquisitionWork = new JobAcquisitionWork(jobExecutorEE, this);
 		bootstrapCtx.getWorkManager().startWork(jobAcquisitionWork);
 	}
 

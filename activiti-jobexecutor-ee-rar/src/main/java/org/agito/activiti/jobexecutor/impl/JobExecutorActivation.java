@@ -1,6 +1,7 @@
 package org.agito.activiti.jobexecutor.impl;
 
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.resource.ResourceException;
@@ -55,7 +56,8 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 				}
 			}
 		} catch (UnavailableException e) {
-			throw new RuntimeException("JobExecutorDispatcher is not available.");
+			LOGGER.log(Level.SEVERE,
+					"UnavailableException while attempting to create messaging endpoint for executing job", e);
 		}
 	}
 

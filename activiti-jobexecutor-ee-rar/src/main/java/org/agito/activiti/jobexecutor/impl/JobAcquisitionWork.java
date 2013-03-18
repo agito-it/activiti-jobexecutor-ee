@@ -12,7 +12,6 @@ import javax.resource.spi.work.WorkException;
 import javax.resource.spi.work.WorkListener;
 import javax.resource.spi.work.WorkManager;
 
-import org.activiti.engine.ActivitiOptimisticLockingException;
 import org.activiti.engine.impl.Page;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.jobexecutor.AcquiredJobs;
@@ -20,17 +19,19 @@ import org.activiti.engine.impl.jobexecutor.GetUnlockedTimersByDuedateCmd;
 import org.activiti.engine.impl.persistence.entity.TimerEntity;
 import org.activiti.engine.impl.util.ClockUtil;
 import org.agito.activiti.JobExecutorEE;
-import org.agito.activiti.jobexecutor.api.JobExecutorDispatcher;
+import org.agito.activiti.jobexecutor.JobExecutorResourceAdapter;
 
 public class JobAcquisitionWork implements Work {
 
 	private final static Logger LOGGER = Logger.getLogger(JobAcquisitionWork.class.getName());
 
 	protected final JobExecutorEE jobExecutor;
-	protected final JobExecutorDispatcher jobDispatcher;
-	protected final WorkManager workManager;
+	protected final JobExecutorResourceAdapter resourceAdapter;
+	protected final RetryWorkListener retryWorkListener;
 
 	protected volatile boolean isInterrupted = false;
+	protected volatile boolean isJobAdded = false;
+
 	protected final Object MONITOR = new Object();
 
 	protected final AtomicBoolean isWaiting = new AtomicBoolean(false);
@@ -39,23 +40,19 @@ public class JobAcquisitionWork implements Work {
 	protected float waitIncreaseFactor = 2;
 	protected long maxWait = 60 * 1000;
 
-	public JobAcquisitionWork(JobExecutorEE jobExecutor, JobExecutorDispatcher jobDispatcher, WorkManager workManager) {
+	public JobAcquisitionWork(JobExecutorEE jobExecutor, JobExecutorResourceAdapter resourceAdapter) {
 		this.jobExecutor = jobExecutor;
-		this.jobDispatcher = jobDispatcher;
-		this.workManager = workManager;
+		this.resourceAdapter = resourceAdapter;
+		this.retryWorkListener = new RetryWorkListener(resourceAdapter);
 	}
 
 	@Override
 	public void run() {
 
 		if (!isInterrupted) {
-			if (LOGGER.isLoggable(Level.INFO)) {
-				LOGGER.info(jobExecutor.getName() + " acquiring jobs.");
-			}
+			LOGGER.info(jobExecutor.getName() + " job acquisition thread starts.");
 		} else {
-			if (LOGGER.isLoggable(Level.INFO)) {
-				LOGGER.info(jobExecutor.getName() + " job executor not active anymore. Cancelling job acquisition.");
-			}
+			LOGGER.info(jobExecutor.getName() + " job executor not active anymore. cancelling job acquisition thread.");
 			return;
 		}
 
@@ -66,17 +63,21 @@ public class JobAcquisitionWork implements Work {
 		try {
 			AcquiredJobs acquiredJobs = commandExecutor.execute(jobExecutor.getAcquireJobsCmd());
 
-			jobExecutor.getRejectedJobsHandler();
 			for (List<String> jobIds : acquiredJobs.getJobIdBatches()) {
-				for (String jobId : jobIds) {
-					jobDispatcher.dispatch(jobId, commandExecutor);
-				}
+				// get jobs done by work manager thread
+				resourceAdapter
+						.getBootstrapCtx()
+						.getWorkManager()
+						.scheduleWork(new JobExecutionWork(resourceAdapter, jobIds, commandExecutor),
+								WorkManager.INDEFINITE, null, retryWorkListener);
 			}
 
 			// if all jobs were executed
 			millisToWait = jobExecutor.getWaitTimeInMillis();
 			int jobsAcquired = acquiredJobs.getJobIdBatches().size();
 			if (jobsAcquired < maxJobsPerAcquisition) {
+
+				isJobAdded = false;
 
 				// check if the next timer should fire before the normal sleep time is over
 				Date duedate = new Date(ClockUtil.getCurrentTime().getTime() + millisToWait);
@@ -95,19 +96,8 @@ public class JobAcquisitionWork implements Work {
 				millisToWait = 0;
 			}
 
-		} catch (ActivitiOptimisticLockingException optimisticLockingException) {
-			// See http://jira.codehaus.org/browse/ACT-1390
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.fine("Optimistic locking exception during job acquisition. If you have multiple job executors running against the same database, "
-						+ "this exception means that this thread tried to acquire a job, which already was acquired by another job executor acquisition thread."
-						+ "This is expected behavior in a clustered environment. "
-						+ "You can ignore this message if you indeed have multiple job executor acquisition threads running against the same database. "
-						+ "Exception message: " + optimisticLockingException.getMessage());
-			}
 		} catch (Exception e) {
-			if (LOGGER.isLoggable(Level.SEVERE)) {
-				LOGGER.log(Level.SEVERE, "exception during job acquisition: " + e.getMessage(), e);
-			}
+			LOGGER.log(Level.SEVERE, "exception during job acquisition: " + e.getMessage(), e);
 			millisToWait *= waitIncreaseFactor;
 			if (millisToWait > maxWait) {
 				millisToWait = maxWait;
@@ -116,51 +106,37 @@ public class JobAcquisitionWork implements Work {
 			}
 		}
 
-		if ((millisToWait > 0)) {
+		if ((millisToWait > 0) && (!isJobAdded)) {
 			try {
-				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("job acquisition thread sleeping for " + millisToWait + " millis");
-				}
-
+				LOGGER.fine("job acquisition thread sleeping for " + millisToWait + " millis");
 				synchronized (MONITOR) {
 					if (!isInterrupted) {
 						isWaiting.set(true);
 						MONITOR.wait(millisToWait);
 					}
-
 				}
-
-				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("job acquisition thread woke up");
-				}
+				LOGGER.fine("job acquisition thread woke up");
+				isJobAdded = false;
 			} catch (InterruptedException e) {
-				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("job acquisition wait interrupted");
-				}
+				LOGGER.fine("job acquisition wait interrupted");
 			} finally {
 				isWaiting.set(false);
 			}
 		}
 
 		if (!isInterrupted) {
-			if (LOGGER.isLoggable(Level.INFO)) {
-				LOGGER.info(jobExecutor.getName() + " job acquisition done. scheduling next run.");
-			}
-
 			try {
-				workManager.scheduleWork(this, WorkManager.INDEFINITE, null, new RetryListener(workManager));
+				LOGGER.info(jobExecutor.getName() + " job acquisition thread done. start next run.");
+				resourceAdapter.getBootstrapCtx().getWorkManager()
+						.scheduleWork(this, WorkManager.INDEFINITE, null, retryWorkListener);
 			} catch (WorkException e) {
-				if (LOGGER.isLoggable(Level.SEVERE)) {
-					LOGGER.log(Level.SEVERE, "exception during scheduleWork of job acquisition: " + e.getMessage(), e);
-				}
+				LOGGER.log(Level.SEVERE, "exception during scheduleWork of job acquisition: " + e.getMessage(), e);
 			}
 		}
-
 	}
 
 	@Override
 	public void release() {
-		LOGGER.finer("release()");
 	}
 
 	public void stop() {
@@ -168,6 +144,17 @@ public class JobAcquisitionWork implements Work {
 		synchronized (MONITOR) {
 			isInterrupted = true;
 			if (isWaiting.compareAndSet(true, false)) {
+				MONITOR.notifyAll();
+			}
+		}
+	}
+
+	public void jobWasAdded() {
+		isJobAdded = true;
+		if (isWaiting.compareAndSet(true, false)) {
+			// ensures we only notify once
+			// I am OK with the race condition
+			synchronized (MONITOR) {
 				MONITOR.notifyAll();
 			}
 		}
@@ -197,45 +184,39 @@ public class JobAcquisitionWork implements Work {
 		this.maxWait = maxWait;
 	}
 
-	private static final class RetryListener implements WorkListener {
+	private static final class RetryWorkListener implements WorkListener {
 
-		protected final WorkManager workManager;
+		protected final JobExecutorResourceAdapter resourceAdapter;
 
-		public RetryListener(WorkManager workManager) {
-			this.workManager = workManager;
+		public RetryWorkListener(JobExecutorResourceAdapter resourceAdapter) {
+			this.resourceAdapter = resourceAdapter;
 		}
 
 		@Override
 		public void workAccepted(WorkEvent arg0) {
-			// TODO Auto-generated method stub
-
+			// do nothing
 		}
 
 		@Override
 		public void workCompleted(WorkEvent arg0) {
-			// TODO Auto-generated method stub
-
+			// do nothing
 		}
 
 		@Override
 		public void workRejected(WorkEvent event) {
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "work rejected with code {0}. will retry.", new Object[] { event.getType() });
-			}
-
+			LOGGER.log(Level.FINE, "work rejected with code {0}. will retry.", new Object[] { event.getType() });
 			try {
-				workManager.scheduleWork(event.getWork(), WorkManager.INDEFINITE, null, this);
+				resourceAdapter.getBootstrapCtx().getWorkManager()
+						.scheduleWork(event.getWork(), WorkManager.INDEFINITE, null, this);
 			} catch (WorkException e) {
-				if (LOGGER.isLoggable(Level.SEVERE)) {
-					LOGGER.log(Level.SEVERE, "exception during scheduleWork of job acquisition: " + e.getMessage(), e);
-				}
+				LOGGER.log(Level.SEVERE, "exception during scheduleWork of work "
+						+ event.getWork().getClass().getName() + ": " + e.getMessage(), e);
 			}
 		}
 
 		@Override
 		public void workStarted(WorkEvent arg0) {
-			// TODO Auto-generated method stub
-
+			// do nothing
 		}
 
 	}

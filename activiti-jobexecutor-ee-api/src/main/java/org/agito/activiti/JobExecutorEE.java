@@ -13,6 +13,9 @@ import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
 
 public class JobExecutorEE extends JobExecutor {
 
+	protected JobWasAddedCallback jobWasAddedCallback;
+	protected final Object MONITOR = new Object();
+
 	@Override
 	protected void startExecutingJobs() {
 		JobExecutorRegistry registry = null;
@@ -21,9 +24,9 @@ public class JobExecutorEE extends JobExecutor {
 					.getRegistry(new JobExecutorInfo("default"));
 			registry.registerJobExecutor(this);
 		} catch (NamingException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error during lookup of JobExecutorRegistryFactory", e);
 		} catch (ResourceException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error when registering on JobExecutorRegistry", e);
 		} finally {
 			if (registry != null)
 				try {
@@ -31,6 +34,9 @@ public class JobExecutorEE extends JobExecutor {
 				} catch (ResourceException e) {
 					throw new RuntimeException(e);
 				}
+			synchronized (MONITOR) {
+				jobWasAddedCallback = null;
+			}
 		}
 	}
 
@@ -42,9 +48,9 @@ public class JobExecutorEE extends JobExecutor {
 					.getRegistry(new JobExecutorInfo("default"));
 			registry.detachJobExecutor(this);
 		} catch (NamingException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error during lookup of JobExecutorRegistryFactory", e);
 		} catch (ResourceException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error when detaching from JobExecutorRegistry", e);
 		} finally {
 			if (registry != null)
 				try {
@@ -72,7 +78,14 @@ public class JobExecutorEE extends JobExecutor {
 
 	@Override
 	public void jobWasAdded() {
-		// do nothing TODO tbd notify registry
+		synchronized (MONITOR) {
+			if (jobWasAddedCallback != null)
+				jobWasAddedCallback.jobWasAdded();
+		}
+	}
+
+	public void registerJobWasAddedCallback(JobWasAddedCallback callback) {
+		this.jobWasAddedCallback = callback;
 	}
 
 }
