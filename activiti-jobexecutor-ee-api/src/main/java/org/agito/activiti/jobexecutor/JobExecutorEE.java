@@ -24,14 +24,9 @@ import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
  */
 public class JobExecutorEE extends JobExecutor {
 
-	protected final String acquisitionName;
-
+	protected String acquisitionName;
 	protected JobWasAddedCallback jobWasAddedCallback;
 	protected final Object JOB_WAS_ADDED_MONITOR = new Object();
-
-	public JobExecutorEE(String acquisitionName) {
-		this.acquisitionName = acquisitionName;
-	}
 
 	@Override
 	protected void startExecutingJobs() {
@@ -104,6 +99,10 @@ public class JobExecutorEE extends JobExecutor {
 
 	public void setJobWasAddedCallback(JobWasAddedCallback callback) {
 		this.jobWasAddedCallback = callback;
+	}
+
+	public void setAcquisitionName(String acquisitionName) {
+		this.acquisitionName = acquisitionName;
 	}
 
 	public String getAcquisitionName() {
