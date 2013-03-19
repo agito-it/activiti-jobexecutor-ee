@@ -75,7 +75,7 @@ public class JobAcquisitionWork implements Work {
 	public void run() {
 
 		boolean jobExecutionFailed = false;
-		Stack<JobExecutorEE> nonIdleJobExecutorStack = new Stack<JobExecutorEE>();
+		Stack<JobExecutorEE> activeJobExecutorsStack = new Stack<JobExecutorEE>();
 
 		// synchronized to avoid side effects by registration/detachment
 		synchronized (jobExecutors) {
@@ -125,9 +125,7 @@ public class JobAcquisitionWork implements Work {
 				// if all jobs were executed
 				int jobsAcquired = acquiredJobs.getJobIdBatches().size();
 				if (jobsAcquired >= maxJobsPerAcquisition) {
-					LOGGER.log(Level.FINER, "{0} jobsAcquired({1}) >= maxJobsPerAcquisition({2})", new Object[] { name,
-							jobsAcquired, maxJobsPerAcquisition });
-					nonIdleJobExecutorStack.push(jobExecutor);
+					activeJobExecutorsStack.push(jobExecutor);
 				}
 
 			} catch (Exception e) {
@@ -135,7 +133,7 @@ public class JobAcquisitionWork implements Work {
 				LOGGER.log(Level.SEVERE, name + " exception during job acquisition: " + e.getMessage(), e);
 
 				jobExecutionFailed = true;
-				nonIdleJobExecutorStack.push(jobExecutor);
+				activeJobExecutorsStack.push(jobExecutor);
 
 				// if one of the engines fails: increase the wait time
 				if (millisToWait == 0) {
@@ -150,7 +148,7 @@ public class JobAcquisitionWork implements Work {
 			}
 		}
 
-		if (nonIdleJobExecutorStack.size() == 0) {
+		if (activeJobExecutorsStack.size() == 0) {
 			// none of the registered executors have jobs at the moment >> wait
 			millisToWait = configuration.getWaitTimeInMillis();
 		} else {
@@ -158,9 +156,9 @@ public class JobAcquisitionWork implements Work {
 				millisToWait = 0;
 			}
 
-			// transfer non-idle-jobExecutors
-			while (!nonIdleJobExecutorStack.empty()) {
-				jobExecutorStack.push(nonIdleJobExecutorStack.pop());
+			// transfer active jobExecutors
+			while (!activeJobExecutorsStack.empty()) {
+				jobExecutorStack.push(activeJobExecutorsStack.pop());
 			}
 		}
 
@@ -190,6 +188,7 @@ public class JobAcquisitionWork implements Work {
 
 	@Override
 	public void release() {
+		// ignore
 	}
 
 	public void restartAcquisition() {
