@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl.config;
+package org.agito.activiti.jobexecutor.ra.impl.config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
 
 import org.activiti.engine.ActivitiException;
 
-public class JobConfigurationAccessorImpl {
+public class JobConfigurationAccessor {
 
-	private final static Logger LOGGER = Logger.getLogger(JobConfigurationAccessorImpl.class.getName());
+	private final static Logger LOGGER = Logger.getLogger(JobConfigurationAccessor.class.getName());
 
 	private final static String JOB_CONFIGURATION_LOCATION = "jobexecutoree.properties";
 
-	private static JobConfigurationAccessorImpl INSTANCE;
+	private static JobConfigurationAccessor INSTANCE;
 	private static boolean INITIALIZED;
 
 	/**
@@ -42,9 +42,9 @@ public class JobConfigurationAccessorImpl {
 	private final static String NAME_VALIDATION = "[A-Za-z0-9_]{3,64}";
 
 	private String defaultName;
-	private final Map<String, JobConfigurationSectionImpl> sections;
+	private final Map<String, JobConfigurationSection> sections;
 
-	public static JobConfigurationAccessorImpl getInstance() {
+	public static JobConfigurationAccessor getInstance() {
 		if (!INITIALIZED) {
 			initialize();
 		}
@@ -53,14 +53,14 @@ public class JobConfigurationAccessorImpl {
 
 	private static synchronized void initialize() {
 		if (!INITIALIZED) {
-			INSTANCE = new JobConfigurationAccessorImpl();
+			INSTANCE = new JobConfigurationAccessor();
 			INITIALIZED = true;
 		}
 	}
 
-	private JobConfigurationAccessorImpl() {
+	private JobConfigurationAccessor() {
 
-		sections = new HashMap<String, JobConfigurationSectionImpl>();
+		sections = new HashMap<String, JobConfigurationSection>();
 
 		if (!parseConfig(readFileAsString(JOB_CONFIGURATION_LOCATION))) {
 			throw new ActivitiException("Job executor configuration has errors. Refer to earlier log entries.");
@@ -68,7 +68,7 @@ public class JobConfigurationAccessorImpl {
 
 	}
 
-	public Map<String, JobConfigurationSectionImpl> getSectionsMap() {
+	public Map<String, JobConfigurationSection> getSectionsMap() {
 		return this.sections;
 	}
 
@@ -107,27 +107,27 @@ public class JobConfigurationAccessorImpl {
 
 			isOk = isOk && validateName(name, m);
 
-			JobConfigurationSectionImpl section = getSection(name);
+			JobConfigurationSection section = getSection(name);
 
-			if (JobConfigurationSectionImpl.FIELD_LOCK_TIME_IN_MILLIS.equals(property)) {
+			if (JobConfigurationSection.FIELD_LOCK_TIME_IN_MILLIS.equals(property)) {
 				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSectionImpl.FIELD_LOCK_TIME_IN_MILLIS, value);
+						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_LOCK_TIME_IN_MILLIS, value);
 
 				if (isOk)
 					section.setLockTimeInMillis(Integer.valueOf(value));
 
 				infoJobConfigValue(name, property, value);
-			} else if (JobConfigurationSectionImpl.FIELD_WAIT_TIME_IN_MILLIS.equals(property)) {
+			} else if (JobConfigurationSection.FIELD_WAIT_TIME_IN_MILLIS.equals(property)) {
 				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSectionImpl.FIELD_WAIT_TIME_IN_MILLIS, value);
+						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_WAIT_TIME_IN_MILLIS, value);
 
 				if (isOk)
 					section.setWaitTimeInMillis(Integer.valueOf(value));
 
 				infoJobConfigValue(name, property, value);
-			} else if (JobConfigurationSectionImpl.FIELD_MAX_JOBS_PER_ACQUISITION.equals(property)) {
+			} else if (JobConfigurationSection.FIELD_MAX_JOBS_PER_ACQUISITION.equals(property)) {
 				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSectionImpl.FIELD_MAX_JOBS_PER_ACQUISITION,
+						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_MAX_JOBS_PER_ACQUISITION,
 								value);
 
 				if (isOk)
@@ -145,11 +145,11 @@ public class JobConfigurationAccessorImpl {
 		return isOk;
 	}
 
-	private JobConfigurationSectionImpl getSection(String name) {
-		JobConfigurationSectionImpl section = sections.get(name);
+	private JobConfigurationSection getSection(String name) {
+		JobConfigurationSection section = sections.get(name);
 		if (section == null) {
 			LOGGER.info("Job executor configuration > name=" + name);
-			section = new JobConfigurationSectionImpl();
+			section = new JobConfigurationSection();
 			section.setName(name);
 			section.setDefault(name.equals(defaultName));
 			sections.put(name, section);
@@ -214,7 +214,7 @@ public class JobConfigurationAccessorImpl {
 		StringBuffer sb = new StringBuffer();
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new InputStreamReader(JobConfigurationAccessorImpl.class.getClassLoader()
+			br = new BufferedReader(new InputStreamReader(JobConfigurationAccessor.class.getClassLoader()
 					.getResourceAsStream(filePath), "UTF-8"));
 			for (int c = br.read(); c != -1; c = br.read())
 				sb.append((char) c);

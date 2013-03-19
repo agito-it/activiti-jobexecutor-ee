@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl.work;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -18,10 +18,10 @@ import javax.resource.spi.work.WorkRejectedException;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.jobexecutor.AcquiredJobs;
-import org.agito.activiti.JobExecutorEE;
-import org.agito.activiti.JobWasAddedCallback;
-import org.agito.activiti.jobexecutor.JobExecutorResourceAdapter;
-import org.agito.activiti.jobexecutor.impl.config.JobConfigurationSectionImpl;
+import org.agito.activiti.jobexecutor.JobExecutorEE;
+import org.agito.activiti.jobexecutor.JobWasAddedCallback;
+import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
+import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationSection;
 
 public class JobAcquisitionWork implements Work {
 
@@ -31,7 +31,7 @@ public class JobAcquisitionWork implements Work {
 
 	protected final String name;
 	protected final Map<String, JobExecutorEE> jobExecutors;
-	protected final JobConfigurationSectionImpl configuration;
+	protected final JobConfigurationSection configuration;
 	protected final JobWasAddedCallback jobWasAddedCallback;
 
 	protected final Stack<JobExecutorEE> jobExecutorStack = new Stack<JobExecutorEE>();
@@ -51,7 +51,7 @@ public class JobAcquisitionWork implements Work {
 	protected float waitIncreaseFactor = 2;
 	protected long maxWait = 60 * 1000;
 
-	public JobAcquisitionWork(String name, JobConfigurationSectionImpl configuration,
+	public JobAcquisitionWork(String name, JobConfigurationSection configuration,
 			JobExecutorResourceAdapter resourceAdapter) {
 		this.name = name;
 		this.jobExecutors = Collections.synchronizedMap(new LinkedHashMap<String, JobExecutorEE>());

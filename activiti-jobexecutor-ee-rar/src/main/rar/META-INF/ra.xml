@@ -9,14 +9,14 @@
 	<resourceadapter-version>1.0</resourceadapter-version>
 
 	<resourceadapter>
-		<resourceadapter-class>org.agito.activiti.jobexecutor.JobExecutorResourceAdapter</resourceadapter-class>
+		<resourceadapter-class>org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter</resourceadapter-class>
 		<outbound-resourceadapter>
 			<connection-definition>
-				<managedconnectionfactory-class>org.agito.activiti.jobexecutor.JobExecutorManagedConnectionFactory</managedconnectionfactory-class>
+				<managedconnectionfactory-class>org.agito.activiti.jobexecutor.ra.JobExecutorManagedConnectionFactory</managedconnectionfactory-class>
 				<connectionfactory-interface>org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory</connectionfactory-interface>
-				<connectionfactory-impl-class>org.agito.activiti.jobexecutor.impl.JobExecutorRegistryFactoryImpl</connectionfactory-impl-class>
+				<connectionfactory-impl-class>org.agito.activiti.jobexecutor.ra.impl.JobExecutorRegistryFactoryImpl</connectionfactory-impl-class>
 				<connection-interface>org.agito.activiti.jobexecutor.api.JobExecutorRegistry</connection-interface>
-				<connection-impl-class>org.agito.activiti.jobexecutor.impl.JobExecutorRegistryImpl</connection-impl-class>
+				<connection-impl-class>org.agito.activiti.jobexecutor.ra.impl.JobExecutorRegistryImpl</connection-impl-class>
 			</connection-definition>
 			<transaction-support>NoTransaction</transaction-support>
 			<reauthentication-support>false</reauthentication-support>
@@ -27,7 +27,7 @@
 				<messagelistener>
 					<messagelistener-type>org.agito.activiti.jobexecutor.api.JobExecutorDispatcher</messagelistener-type>
 					<activationspec>
-						<activationspec-class>org.agito.activiti.jobexecutor.impl.JobExecutorActivation</activationspec-class>
+						<activationspec-class>org.agito.activiti.jobexecutor.ra.impl.JobExecutorActivation</activationspec-class>
 					</activationspec>
 				</messagelistener>
 			</messageadapter>

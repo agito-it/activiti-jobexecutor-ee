@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl;
 
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -16,9 +16,8 @@ import javax.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 
-import org.agito.activiti.jobexecutor.JobExecutorManagedConnectionFactory;
-import org.agito.activiti.jobexecutor.api.JobExecutorInfo;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
+import org.agito.activiti.jobexecutor.ra.JobExecutorManagedConnectionFactory;
 
 public class JobExecutorManagedConnection implements ManagedConnection {
 
@@ -62,8 +61,8 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	public Object getConnection(Subject subject, ConnectionRequestInfo info) throws ResourceException {
 		LOGGER.finer("getConnection(Subject, ConnectionRequestInfo)");
 
-		if (info == null || info instanceof JobExecutorInfo)
-			return new JobExecutorRegistryImpl(this, (JobExecutorInfo) info);
+		if (info == null)
+			return new JobExecutorRegistryImpl(this);
 
 		throw new ResourceException("Unknown ConnectionRequestInfo type: " + info.getClass().getName());
 

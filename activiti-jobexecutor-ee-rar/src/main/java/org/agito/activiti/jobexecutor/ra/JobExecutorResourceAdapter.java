@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor;
+package org.agito.activiti.jobexecutor.ra;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,10 @@ import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
-import org.agito.activiti.JobExecutorEE;
-import org.agito.activiti.jobexecutor.impl.JobAcquisitionWork;
-import org.agito.activiti.jobexecutor.impl.JobExecutorActivation;
-import org.agito.activiti.jobexecutor.impl.config.JobConfigurationAccessorImpl;
-import org.agito.activiti.jobexecutor.impl.config.JobConfigurationSectionImpl;
+import org.agito.activiti.jobexecutor.ra.impl.JobExecutorActivation;
+import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationAccessor;
+import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationSection;
+import org.agito.activiti.jobexecutor.ra.impl.work.JobAcquisitionWork;
 
 public class JobExecutorResourceAdapter implements ResourceAdapter {
 
@@ -103,7 +102,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 		this.jobAcquisitionMap = new HashMap<String, JobAcquisitionWork>();
 
-		for (JobConfigurationSectionImpl configuration : JobConfigurationAccessorImpl.getInstance().getSectionsMap()
+		for (JobConfigurationSection configuration : JobConfigurationAccessor.getInstance().getSectionsMap()
 				.values()) {
 			String name = configuration.getName();
 			JobAcquisitionWork jobAcquisition = new JobAcquisitionWork(name, configuration, this);

@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl;
 
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -13,8 +13,8 @@ import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 
 import org.activiti.engine.impl.interceptor.CommandExecutor;
-import org.agito.activiti.jobexecutor.JobExecutorResourceAdapter;
 import org.agito.activiti.jobexecutor.api.JobExecutorDispatcher;
+import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
 
 public class JobExecutorActivation implements JobExecutorDispatcher, ActivationSpec {
 

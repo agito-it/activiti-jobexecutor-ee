@@ -1,4 +1,4 @@
-package org.agito.activiti;
+package org.agito.activiti.jobexecutor;
 
 import java.util.List;
 
@@ -8,14 +8,30 @@ import javax.resource.ResourceException;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.jobexecutor.JobExecutor;
-import org.agito.activiti.jobexecutor.api.JobExecutorInfo;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
 
+/**
+ * Job Executor for Enterprise Environments.
+ * 
+ * It uses a central registry as entry point for job acquisition/execution. This can be provided by a JCA adapter.
+ * The registry (and its environment) is completely in charge for providing an appropriate acquisition/execution strategy.
+ * 
+ * A callback is used to notify the registry about new jobs.
+ * 
+ * @author agito
+ * 
+ */
 public class JobExecutorEE extends JobExecutor {
+
+	protected final String acquisitionName;
 
 	protected JobWasAddedCallback jobWasAddedCallback;
 	protected final Object JOB_WAS_ADDED_MONITOR = new Object();
+
+	public JobExecutorEE(String acquisitionName) {
+		this.acquisitionName = acquisitionName;
+	}
 
 	@Override
 	protected void startExecutingJobs() {
@@ -23,7 +39,7 @@ public class JobExecutorEE extends JobExecutor {
 		try {
 			synchronized (JOB_WAS_ADDED_MONITOR) {
 				registry = ((JobExecutorRegistryFactory) InitialContext.doLookup(JobExecutorRegistryFactory.JNDI))
-						.getRegistry(null);
+						.getRegistry();
 				registry.registerJobExecutor(this);
 			}
 		} catch (NamingException e) {
@@ -46,7 +62,7 @@ public class JobExecutorEE extends JobExecutor {
 		try {
 			synchronized (JOB_WAS_ADDED_MONITOR) {
 				registry = ((JobExecutorRegistryFactory) InitialContext.doLookup(JobExecutorRegistryFactory.JNDI))
-						.getRegistry(null);
+						.getRegistry();
 				registry.detachJobExecutor(this);
 			}
 		} catch (NamingException e) {
@@ -88,6 +104,10 @@ public class JobExecutorEE extends JobExecutor {
 
 	public void setJobWasAddedCallback(JobWasAddedCallback callback) {
 		this.jobWasAddedCallback = callback;
+	}
+
+	public String getAcquisitionName() {
+		return acquisitionName;
 	}
 
 }

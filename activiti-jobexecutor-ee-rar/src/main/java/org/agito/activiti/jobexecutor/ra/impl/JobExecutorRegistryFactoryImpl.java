@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -9,13 +9,12 @@ import javax.resource.Referenceable;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 
-import org.agito.activiti.jobexecutor.JobExecutorManagedConnectionFactory;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
-import org.agito.activiti.jobexecutor.api.JobExecutorInfo;
+import org.agito.activiti.jobexecutor.ra.JobExecutorManagedConnectionFactory;
 
 public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactory, Serializable, Referenceable {
-	
+
 	private final static Logger LOGGER = Logger.getLogger(JobExecutorRegistryFactoryImpl.class.getName());
 
 	private static final long serialVersionUID = -2526727522162902608L;
@@ -32,9 +31,9 @@ public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactor
 	/* connection */
 
 	@Override
-	public JobExecutorRegistry getRegistry(JobExecutorInfo properties) throws ResourceException {
+	public JobExecutorRegistry getRegistry() throws ResourceException {
 		LOGGER.finer("getRegistry(JobExecutorInfo)");
-		return (JobExecutorRegistry) this.cm.allocateConnection(mcf, properties);
+		return (JobExecutorRegistry) this.cm.allocateConnection(mcf, null);
 	}
 
 	/* reference */

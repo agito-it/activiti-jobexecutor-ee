@@ -1,6 +1,6 @@
-package org.agito.activiti.jobexecutor.impl.config;
+package org.agito.activiti.jobexecutor.ra.impl.config;
 
-public class JobConfigurationSectionImpl {
+public class JobConfigurationSection {
 
 	public final static int DEFAULT_MAX_JOBS_PER_ACQUISITION = 3;
 	public final static int DEFAULT_LOCK_TIME_IN_MILLIS = 30000;

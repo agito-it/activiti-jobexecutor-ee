@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl.work;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -9,7 +9,7 @@ import javax.resource.spi.work.Work;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
-import org.agito.activiti.jobexecutor.JobExecutorResourceAdapter;
+import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
 
 public class JobExecutionWork implements Work {
 

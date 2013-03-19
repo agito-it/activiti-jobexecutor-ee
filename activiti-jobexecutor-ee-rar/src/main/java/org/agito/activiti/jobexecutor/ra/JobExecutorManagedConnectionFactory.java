@@ -1,10 +1,9 @@
-package org.agito.activiti.jobexecutor;
+package org.agito.activiti.jobexecutor.ra;
 
 import java.io.PrintWriter;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
@@ -14,9 +13,9 @@ import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ResourceAdapterAssociation;
 import javax.security.auth.Subject;
 
-import org.agito.activiti.jobexecutor.impl.DefaultConnectionManager;
-import org.agito.activiti.jobexecutor.impl.JobExecutorManagedConnection;
-import org.agito.activiti.jobexecutor.impl.JobExecutorRegistryFactoryImpl;
+import org.agito.activiti.jobexecutor.ra.impl.DefaultConnectionManager;
+import org.agito.activiti.jobexecutor.ra.impl.JobExecutorManagedConnection;
+import org.agito.activiti.jobexecutor.ra.impl.JobExecutorRegistryFactoryImpl;
 
 public class JobExecutorManagedConnectionFactory implements ManagedConnectionFactory, ResourceAdapterAssociation {
 

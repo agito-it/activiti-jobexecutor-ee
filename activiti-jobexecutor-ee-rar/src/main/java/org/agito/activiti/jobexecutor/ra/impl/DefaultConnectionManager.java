@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.ra.impl;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
