@@ -42,15 +42,15 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 				messageEndpoint.beforeDelivery(DISPATCH);
 				((JobExecutorDispatcher) messageEndpoint).dispatch(jobId, commandExecutor);
 			} catch (NoSuchMethodException e) {
-				throw new RuntimeException("JobExecutorDispatcher has no dispatch functionality");
+				throw new RuntimeException("JobExecutorDispatcher has no dispatch functionality", e);
 			} catch (ResourceException e) {
-				throw new RuntimeException(e); // TODO
+				throw new RuntimeException("MessageEndpoint has error during beforeDelivery()", e);
 			} finally {
 				if (messageEndpoint != null) {
 					try {
 						messageEndpoint.afterDelivery();
 					} catch (ResourceException e) {
-						throw new RuntimeException(e); // TODO
+						throw new RuntimeException("MessageEndpoint has error during afterDelivery()", e);
 					}
 					messageEndpoint.release();
 				}
@@ -75,14 +75,14 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 
 	@Override
 	public void setResourceAdapter(ResourceAdapter resourceAdapter) throws ResourceException {
-		LOGGER.finer("call setResourceAdapter(resourceAdapter)");
+		LOGGER.finer("setResourceAdapter(resourceAdapter)");
 		if (!JobExecutorResourceAdapter.class.isAssignableFrom(resourceAdapter.getClass()))
 			throw new ResourceException("Invalid resource adapter type");
 		this.resourceAdapter = (JobExecutorResourceAdapter) resourceAdapter;
 	}
 
 	public void setMessageEndpointFactory(MessageEndpointFactory messageEndpointFactory) {
-		LOGGER.finer("call setMessageEndpointFactory()");
+		LOGGER.finer("setMessageEndpointFactory()");
 		this.messageEndpointFactory = messageEndpointFactory;
 	}
 
@@ -90,7 +90,6 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 
 	@Override
 	public void validate() throws InvalidPropertyException {
-		LOGGER.finer("call validate()");
 		// ignore
 	}
 

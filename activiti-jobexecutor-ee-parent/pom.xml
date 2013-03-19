@@ -20,6 +20,7 @@
 
 	<modules>
 		<module>../activiti-jobexecutor-ee-api</module>
+		<module>../activiti-jobexecutor-ee-ejb</module>
 		<module>../activiti-jobexecutor-ee-rar</module>
 		<module>../activiti-jobexecutor-ee-ear</module>
 	</modules>

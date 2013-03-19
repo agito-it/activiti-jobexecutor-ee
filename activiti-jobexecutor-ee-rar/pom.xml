@@ -15,10 +15,17 @@
 	<properties>
 		<jboss-as.username>admin</jboss-as.username>
 		<jboss-as.password>admin123</jboss-as.password>
-		<!-- <jboss-as.deployment.targetDir>D:/dev_utils/jboss-as-7.1.1.Final</jboss-as.deployment.targetDir> -->
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>activiti-jobexecutor-ee-ejb</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>activiti-jobexecutor-ee-api</artifactId>
@@ -37,13 +44,6 @@
 			<groupId>javaee</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-connector</artifactId>
-			<version>7.1.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -70,18 +70,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-						<manifestEntries>
-							<Dependencies>org.jboss.as.connector</Dependencies>
-						</manifestEntries>
-					</archive>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

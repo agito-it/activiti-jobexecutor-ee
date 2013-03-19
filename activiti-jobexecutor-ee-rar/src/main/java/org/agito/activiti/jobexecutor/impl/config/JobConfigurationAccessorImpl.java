@@ -1,5 +1,8 @@
 package org.agito.activiti.jobexecutor.impl.config;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +10,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.activiti.engine.impl.util.IoUtil;
+import org.activiti.engine.ActivitiException;
 
 public class JobConfigurationAccessorImpl {
 
@@ -59,7 +62,9 @@ public class JobConfigurationAccessorImpl {
 
 		sections = new HashMap<String, JobConfigurationSectionImpl>();
 
-		parseConfig(IoUtil.readFileAsString(JOB_CONFIGURATION_LOCATION));
+		if (!parseConfig(readFileAsString(JOB_CONFIGURATION_LOCATION))) {
+			throw new ActivitiException("Job executor configuration has errors. Refer to earlier log entries.");
+		}
 
 	}
 
@@ -146,6 +151,7 @@ public class JobConfigurationAccessorImpl {
 			LOGGER.info("Job executor configuration > name=" + name);
 			section = new JobConfigurationSectionImpl();
 			section.setName(name);
+			section.setDefault(name.equals(defaultName));
 			sections.put(name, section);
 		}
 		return section;
@@ -201,6 +207,27 @@ public class JobConfigurationAccessorImpl {
 			return false;
 		}
 		return true;
+	}
+
+	private static String readFileAsString(String filePath) {
+
+		StringBuffer sb = new StringBuffer();
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new InputStreamReader(JobConfigurationAccessorImpl.class.getClassLoader()
+					.getResourceAsStream(filePath), "UTF-8"));
+			for (int c = br.read(); c != -1; c = br.read())
+				sb.append((char) c);
+		} catch (Exception e) {
+			throw new ActivitiException("Couldn't read file " + filePath + ": " + e.getMessage());
+		} finally {
+			try {
+				br.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+		return sb.toString();
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.agito.activiti.jobexecutor.impl;
+package org.agito.activiti.jobexecutor.bean;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,21 +11,16 @@ import org.activiti.engine.impl.cmd.ExecuteJobsCmd;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.agito.activiti.jobexecutor.api.JobExecutorDispatcher;
 
-@MessageDriven(messageListenerInterface = JobExecutorDispatcher.class)
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class JobExecutorDispatcherImpl implements JobExecutorDispatcher {
+@MessageDriven(messageListenerInterface = JobExecutorDispatcher.class)
+public class JobExecutorDispatcherBean implements JobExecutorDispatcher {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorDispatcherImpl.class.getName());
-
-	public JobExecutorDispatcherImpl() {
-	}
+	private final static Logger LOGGER = Logger.getLogger(JobExecutorDispatcherBean.class.getName());
 
 	@Override
 	public void dispatch(String jobId, CommandExecutor commandExecutor) {
 		LOGGER.log(Level.FINER, "dispatch(jobId={0}, commandExecutor)", new Object[] { jobId });
-
 		commandExecutor.execute(new ExecuteJobsCmd(jobId));
-
 	}
 
 }

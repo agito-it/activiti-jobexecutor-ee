@@ -32,15 +32,33 @@ public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 	@Override
 	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
 		LOGGER.finer("registerJobExecutor(jobExecutorEE)");
-		managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter()
-				.registerJobExecutor(jobExecutorEE);
+		if (properties == null) {
+			managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter().getDefaultJobAcquistion()
+					.registerJobExecutor(jobExecutorEE);
+		} else {
+			JobAcquisitionWork jobAcquisition = managedConnection.getJobExecutorManagedConnectionFactory()
+					.getResourceAdapter().getJobAcquisitionMap().get(properties.getJobExecutorId());
+			if (jobAcquisition == null)
+				throw new ResourceException("Job acquisition " + properties.getJobExecutorId() + " does not exist.");
+
+			jobAcquisition.registerJobExecutor(jobExecutorEE);
+		}
 	}
 
 	@Override
 	public void detachJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
 		LOGGER.finer("detachJobExecutor(jobExecutorEE)");
-		managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter()
-				.detachJobExecutor(jobExecutorEE);
+		if (properties == null) {
+			managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter().getDefaultJobAcquistion()
+					.detachJobExecutor(jobExecutorEE);
+		} else {
+			JobAcquisitionWork jobAcquisition = managedConnection.getJobExecutorManagedConnectionFactory()
+					.getResourceAdapter().getJobAcquisitionMap().get(properties.getJobExecutorId());
+			if (jobAcquisition == null)
+				throw new ResourceException("Job acquisition " + properties.getJobExecutorId() + " does not exist.");
+
+			jobAcquisition.detachJobExecutor(jobExecutorEE);
+		}
 	}
 
 }

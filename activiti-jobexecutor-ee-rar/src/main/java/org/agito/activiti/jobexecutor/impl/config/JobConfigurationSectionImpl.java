@@ -11,6 +11,7 @@ public class JobConfigurationSectionImpl {
 	public final static String FIELD_WAIT_TIME_IN_MILLIS = "waitTimeInMillis";
 
 	private String name;
+	private boolean isDefault;
 
 	private int maxJobsPerAcquisition = DEFAULT_MAX_JOBS_PER_ACQUISITION;
 	private int lockTimeInMillis = DEFAULT_LOCK_TIME_IN_MILLIS;
@@ -22,6 +23,14 @@ public class JobConfigurationSectionImpl {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	public int getMaxJobsPerAcquisition() {

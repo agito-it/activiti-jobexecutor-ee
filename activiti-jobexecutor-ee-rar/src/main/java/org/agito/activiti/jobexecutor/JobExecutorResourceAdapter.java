@@ -1,5 +1,7 @@
 package org.agito.activiti.jobexecutor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.resource.NotSupportedException;
@@ -14,6 +16,8 @@ import javax.transaction.xa.XAResource;
 import org.agito.activiti.JobExecutorEE;
 import org.agito.activiti.jobexecutor.impl.JobAcquisitionWork;
 import org.agito.activiti.jobexecutor.impl.JobExecutorActivation;
+import org.agito.activiti.jobexecutor.impl.config.JobConfigurationAccessorImpl;
+import org.agito.activiti.jobexecutor.impl.config.JobConfigurationSectionImpl;
 
 public class JobExecutorResourceAdapter implements ResourceAdapter {
 
@@ -21,7 +25,8 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 	private BootstrapContext bootstrapCtx;
 	private JobExecutorActivation jobExecutorActivation;
-	private JobAcquisitionWork jobAcquisitionWork;
+	private Map<String, JobAcquisitionWork> jobAcquisitionMap;
+	private JobAcquisitionWork defaultJobAcquistion;
 
 	/**
 	 * default constructor
@@ -34,6 +39,8 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 	public void start(BootstrapContext ctx) throws ResourceAdapterInternalException {
 		LOGGER.fine("Starting JobExecutorResourceAdapter with workmanager");
 		this.bootstrapCtx = ctx;
+
+		initJobAcquisitions();
 	}
 
 	@Override
@@ -90,15 +97,29 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 		return jobExecutorActivation;
 	}
 
-	/* work */
+	/* acqusition */
 
-	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
-		jobAcquisitionWork = new JobAcquisitionWork(jobExecutorEE, this);
-		bootstrapCtx.getWorkManager().startWork(jobAcquisitionWork);
+	private void initJobAcquisitions() {
+
+		this.jobAcquisitionMap = new HashMap<String, JobAcquisitionWork>();
+
+		for (JobConfigurationSectionImpl configuration : JobConfigurationAccessorImpl.getInstance().getSectionsMap()
+				.values()) {
+			String name = configuration.getName();
+			JobAcquisitionWork jobAcquisition = new JobAcquisitionWork(name, configuration, this);
+			jobAcquisitionMap.put(name, jobAcquisition);
+			if (configuration.isDefault()) {
+				defaultJobAcquistion = jobAcquisition;
+			}
+		}
 	}
 
-	public void detachJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
-		if (jobAcquisitionWork != null)
-			jobAcquisitionWork.stop();
+	public JobAcquisitionWork getDefaultJobAcquistion() {
+		return defaultJobAcquistion;
 	}
+
+	public Map<String, JobAcquisitionWork> getJobAcquisitionMap() {
+		return jobAcquisitionMap;
+	}
+
 }
