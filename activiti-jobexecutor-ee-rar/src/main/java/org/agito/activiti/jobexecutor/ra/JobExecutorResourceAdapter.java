@@ -46,6 +46,8 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 	public void stop() {
 		LOGGER.fine("Stopping JobExecutorResourceAdapter");
 		this.bootstrapCtx = null;
+
+		stopJobAcquisitions();
 	}
 
 	@Override
@@ -102,8 +104,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 		this.jobAcquisitionMap = new HashMap<String, JobAcquisitionWork>();
 
-		for (JobConfigurationSection configuration : JobConfigurationAccessor.getInstance().getSectionsMap()
-				.values()) {
+		for (JobConfigurationSection configuration : JobConfigurationAccessor.getInstance().getSectionsMap().values()) {
 			String name = configuration.getName();
 			JobAcquisitionWork jobAcquisition = new JobAcquisitionWork(name, configuration, this);
 			jobAcquisitionMap.put(name, jobAcquisition);
@@ -111,6 +112,11 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 				defaultJobAcquistion = jobAcquisition;
 			}
 		}
+	}
+
+	private void stopJobAcquisitions() {
+		for (JobAcquisitionWork jobAcquisition : jobAcquisitionMap.values())
+			jobAcquisition.stopAcqisition();
 	}
 
 	public JobAcquisitionWork getDefaultJobAcquistion() {

@@ -191,7 +191,7 @@ public class JobAcquisitionWork implements Work {
 		// ignore
 	}
 
-	public void restartAcquisition() {
+	protected void restartAcquisition() {
 		try {
 			// use scheduleWork for restarting the acquisition thread and add a retry workListener to ensure proper handling upon workRejectedException.
 			// This may occur when no more slots are available in the work manager queue.
@@ -202,13 +202,13 @@ public class JobAcquisitionWork implements Work {
 		}
 	}
 
-	public void start() {
+	protected void start() {
 		LOGGER.finer("start()");
 		restartAcquisition();
 		isActive = true;
 	}
 
-	public void stop() {
+	protected void stop() {
 		LOGGER.finer("stop()");
 		synchronized (MONITOR) {
 			isInterrupted = true;
@@ -216,6 +216,7 @@ public class JobAcquisitionWork implements Work {
 				MONITOR.notifyAll();
 			}
 		}
+		isActive = false;
 	}
 
 	// registration / detachment
@@ -223,7 +224,6 @@ public class JobAcquisitionWork implements Work {
 	public synchronized void registerJobExecutor(JobExecutorEE jobExecutorEE) {
 
 		synchronized (jobExecutors) {
-
 			if (jobExecutors.containsKey(jobExecutorEE.getName()))
 				throw new ActivitiException("Job executor " + jobExecutorEE.getName() + " already registered.");
 
@@ -248,7 +248,6 @@ public class JobAcquisitionWork implements Work {
 	public synchronized void detachJobExecutor(JobExecutorEE jobExecutorEE) {
 
 		synchronized (jobExecutors) {
-
 			if (!jobExecutors.containsKey(jobExecutorEE.getName()))
 				throw new ActivitiException("Job executor " + jobExecutorEE.getName() + " not registered.");
 
@@ -260,7 +259,21 @@ public class JobAcquisitionWork implements Work {
 			if (isActive && jobExecutors.size() == 0) {
 				stop();
 			}
+		}
+	}
 
+	public void stopAcqisition() {
+
+		synchronized (jobExecutors) {
+			if (isActive) {
+				for (JobExecutorEE jobExecutor : jobExecutors.values()) {
+					// jobWasAdded callback
+					jobExecutor.setJobWasAddedCallback(null);
+				}
+				jobExecutors.clear();
+				stop();
+			}
+			LOGGER.log(Level.INFO, "{0} Job acquisition stopped.", new Object[] { name });
 		}
 
 	}
