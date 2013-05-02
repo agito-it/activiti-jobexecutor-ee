@@ -89,7 +89,7 @@ public class JobConfigurationAccessor {
 				break;
 			}
 			this.defaultName = m.group(1);
-			LOGGER.info("Job executor configuration > default=" + defaultName);
+			LOGGER.fine("Job executor configuration > default=" + defaultName);
 		}
 		if (defaultName == null) {
 			LOGGER.severe("Job executor configuration misses default.");
@@ -148,7 +148,7 @@ public class JobConfigurationAccessor {
 	private JobConfigurationSection getSection(String name) {
 		JobConfigurationSection section = sections.get(name);
 		if (section == null) {
-			LOGGER.info("Job executor configuration > name=" + name);
+			LOGGER.fine("Job executor configuration > name=" + name);
 			section = new JobConfigurationSection();
 			section.setName(name);
 			section.setDefault(name.equals(defaultName));
@@ -182,7 +182,7 @@ public class JobConfigurationAccessor {
 	}
 
 	private void infoJobConfigValue(String name, String property, String value) {
-		LOGGER.info(MessageFormat.format("Job executor configuration > name={0} > {1}={2}", name, property, value));
+		LOGGER.fine(MessageFormat.format("Job executor configuration > name={0} > {1}={2}", name, property, value));
 	}
 
 	private void errorInvalidJobConfigValue(String name, String field, String value) {

@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<activiti.version>5.11</activiti.version>
+		<activiti.version>5.12.1</activiti.version>
 	</properties>
 
 	<modules>
