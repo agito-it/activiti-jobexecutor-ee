@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.agito</groupId>
 	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>activiti JobExecutor EE</name>
 	<description>activiti JobExecutor EE</description>
@@ -39,6 +38,7 @@
 		<connection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</connection>
 		<developerConnection>scm:git:ssh://git@git.agito.corp/srv/git/browse/ACTIVITI/activiti-jobexecutor-ee.git</developerConnection>
 		<url>http://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</url>
-	</scm>
+	  <tag>initial</tag>
+  </scm>
 
 </project>
