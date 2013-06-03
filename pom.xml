@@ -5,13 +5,13 @@
 	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>activiti JobExecutor EE Parent</name>
-	<description>activiti JobExecutor EE Parent</description>
+	<name>activiti JobExecutor EE</name>
+	<description>activiti JobExecutor EE</description>
 
 	<parent>
 		<groupId>de.agito.infra.dev</groupId>
 		<artifactId>super-pom</artifactId>
-		<version>0.1.2</version>
+		<version>0.1.4</version>
 	</parent>
 
 	<properties>
@@ -19,10 +19,10 @@
 	</properties>
 
 	<modules>
-		<module>../activiti-jobexecutor-ee-api</module>
-		<module>../activiti-jobexecutor-ee-ejb</module>
-		<module>../activiti-jobexecutor-ee-rar</module>
-		<module>../activiti-jobexecutor-ee-ear</module>
+		<module>activiti-jobexecutor-ee-api</module>
+		<module>activiti-jobexecutor-ee-ejb</module>
+		<module>activiti-jobexecutor-ee-rar</module>
+		<module>activiti-jobexecutor-ee-ear</module>
 	</modules>
 
 	<build>
@@ -37,7 +37,7 @@
 
 	<scm>
 		<connection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</connection>
-		<developerConnection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</developerConnection>
+		<developerConnection>scm:git:ssh://git@git.agito.corp/srv/git/browse/ACTIVITI/activiti-jobexecutor-ee.git</developerConnection>
 		<url>http://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</url>
 	</scm>
 

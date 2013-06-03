@@ -5,7 +5,7 @@
 		<groupId>org.agito</groupId>
 		<artifactId>activiti-jobexecutor-ee-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../activiti-jobexecutor-ee-parent</relativePath>
+		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>activiti-jobexecutor-ee-api</artifactId>
 	<name>activiti JobExecutor EE API</name>
