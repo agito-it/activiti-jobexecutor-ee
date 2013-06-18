@@ -197,6 +197,9 @@ public class JobAcquisitionWork implements Work {
 			// This may occur when no more slots are available in the work manager queue.
 			resourceAdapter.getBootstrapCtx().getWorkManager()
 					.scheduleWork(this, SCHEDULE_WORK_START_TIMEOUT, null, acquisitionRetryWorkListener);
+		} catch (WorkRejectedException e) {
+			LOGGER.log(Level.FINE, name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
+			LOGGER.log(Level.WARNING, name + " JobAcquisitionWork rejected: " + e.getMessage());
 		} catch (WorkException e) {
 			LOGGER.log(Level.SEVERE, name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
 		}
@@ -204,6 +207,7 @@ public class JobAcquisitionWork implements Work {
 
 	protected void start() {
 		LOGGER.finer("start()");
+		isInterrupted = false;
 		restartAcquisition();
 		isActive = true;
 	}
@@ -237,7 +241,7 @@ public class JobAcquisitionWork implements Work {
 
 			jobExecutors.put(jobExecutorEE.getName(), jobExecutorEE);
 
-			if (!isActive && jobExecutors.size() > 0) {
+			if (!isActive) {
 				start();
 			}
 
@@ -351,4 +355,5 @@ public class JobAcquisitionWork implements Work {
 		}
 
 	}
+
 }

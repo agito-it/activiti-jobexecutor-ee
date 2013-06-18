@@ -1,6 +1,8 @@
 package org.agito.activiti.jobexecutor;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -23,6 +25,8 @@ import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
  * 
  */
 public class JobExecutorEE extends JobExecutor {
+
+	private final static Logger LOGGER = Logger.getLogger(JobExecutorEE.class.getName());
 
 	protected String acquisitionName;
 	protected JobWasAddedCallback jobWasAddedCallback;
@@ -60,8 +64,16 @@ public class JobExecutorEE extends JobExecutor {
 						.getRegistry();
 				registry.detachJobExecutor(this);
 			}
+		} catch (IllegalArgumentException e) {
+			LOGGER.log(
+					Level.FINE,
+					"Error during lookup of JobExecutorRegistryFactory when stopping job executor. Server might be in shutdown phase.",
+					e); // CPS-450 java.lang.IllegalArgumentException: JBAS011857: NamingStore ist Null
 		} catch (NamingException e) {
-			throw new ActivitiException("Error during lookup of JobExecutorRegistryFactory", e);
+			LOGGER.log(
+					Level.FINE,
+					"Error during lookup of JobExecutorRegistryFactory when stopping job executor. Server might be in shutdown phase.",
+					e);
 		} catch (ResourceException e) {
 			throw new ActivitiException("Error when detaching from JobExecutorRegistry", e);
 		} finally {
