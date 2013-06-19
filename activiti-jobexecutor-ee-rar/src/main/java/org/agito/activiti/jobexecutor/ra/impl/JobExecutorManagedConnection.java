@@ -3,7 +3,6 @@ package org.agito.activiti.jobexecutor.ra.impl;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -18,16 +17,18 @@ import javax.transaction.xa.XAResource;
 
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.ra.JobExecutorManagedConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutorManagedConnection implements ManagedConnection {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorManagedConnection.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorManagedConnection.class);
 
 	final JobExecutorManagedConnectionFactory mcf;
 
 	public JobExecutorManagedConnection(final JobExecutorManagedConnectionFactory mcf, final Subject subject,
 			final ConnectionRequestInfo info, final PrintWriter defaultLogWriter) {
-		LOGGER.finer("JobExecutorManagedConnection(JobExecutorManagedConnectionFactory, Subject, ConnectionRequestInfo, PrintWriter)");
+		LOGGER.trace("JobExecutorManagedConnection(JobExecutorManagedConnectionFactory, Subject, ConnectionRequestInfo, PrintWriter)");
 		this.mcf = mcf;
 		this.logWriter = defaultLogWriter;
 	}
@@ -36,7 +37,7 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 
 	@Override
 	public void associateConnection(Object connection) throws ResourceException {
-		LOGGER.finer("associateConnection(Object) - not supported");
+		LOGGER.trace("associateConnection(Object) - not supported");
 		throw new NotSupportedException("Connection Association not supported.");
 	}
 
@@ -45,7 +46,7 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	 */
 	@Override
 	public void destroy() throws ResourceException {
-		LOGGER.finer("destroy()");
+		LOGGER.trace("destroy()");
 		cleanup();
 	}
 
@@ -54,12 +55,12 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	 */
 	@Override
 	public void cleanup() throws ResourceException {
-		LOGGER.finer("cleanup()");
+		LOGGER.trace("cleanup()");
 	}
 
 	@Override
 	public Object getConnection(Subject subject, ConnectionRequestInfo info) throws ResourceException {
-		LOGGER.finer("getConnection(Subject, ConnectionRequestInfo)");
+		LOGGER.trace("getConnection(Subject, ConnectionRequestInfo)");
 
 		if (info == null)
 			return new JobExecutorRegistryImpl(this);
@@ -87,7 +88,7 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	 * Container is registered as listener and needs to be informed to clean pools.
 	 */
 	public void closeHandle(JobExecutorRegistry connection) {
-		LOGGER.finer("closeHandle(JobExecutorRegistry)");
+		LOGGER.trace("closeHandle(JobExecutorRegistry)");
 		for (ConnectionEventListener listener : this.listenerList) {
 			ConnectionEvent event = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
 			event.setConnectionHandle(connection);
@@ -99,7 +100,7 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	 * All listeners of the container need to be triggered when an error occurs.
 	 */
 	public void errorOccured() {
-		LOGGER.finer("errorOccured()");
+		LOGGER.trace("errorOccured()");
 		for (ConnectionEventListener listener : this.listenerList) {
 			ConnectionEvent event = new ConnectionEvent(this, ConnectionEvent.CONNECTION_ERROR_OCCURRED);
 			listener.connectionClosed(event);
@@ -109,12 +110,12 @@ public class JobExecutorManagedConnection implements ManagedConnection {
 	private final List<ConnectionEventListener> listenerList = new LinkedList<ConnectionEventListener>();
 
 	public void addConnectionEventListener(ConnectionEventListener listener) {
-		LOGGER.finer("addConnectionEventListener(ConnectionEventListener)");
+		LOGGER.trace("addConnectionEventListener(ConnectionEventListener)");
 		this.listenerList.add(listener);
 	}
 
 	public void removeConnectionEventListener(ConnectionEventListener listener) {
-		LOGGER.finer("removeConnectionEventListener(ConnectionEventListener)");
+		LOGGER.trace("removeConnectionEventListener(ConnectionEventListener)");
 		this.listenerList.remove(listener);
 	}
 

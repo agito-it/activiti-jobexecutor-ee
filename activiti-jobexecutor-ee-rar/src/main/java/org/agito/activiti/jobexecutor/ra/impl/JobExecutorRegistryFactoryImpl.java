@@ -1,7 +1,6 @@
 package org.agito.activiti.jobexecutor.ra.impl;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -12,10 +11,12 @@ import javax.resource.spi.ConnectionManager;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
 import org.agito.activiti.jobexecutor.ra.JobExecutorManagedConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactory, Serializable, Referenceable {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorRegistryFactoryImpl.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorRegistryFactoryImpl.class);
 
 	private static final long serialVersionUID = -2526727522162902608L;
 
@@ -23,7 +24,7 @@ public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactor
 	private final JobExecutorManagedConnectionFactory mcf;
 
 	public JobExecutorRegistryFactoryImpl(final ConnectionManager cm, final JobExecutorManagedConnectionFactory mcf) {
-		LOGGER.finer("JobExecutorRegistryFactoryImpl(ConnectionManager, JobExecutorManagedConnectionFactory)");
+		LOGGER.trace("JobExecutorRegistryFactoryImpl(ConnectionManager, JobExecutorManagedConnectionFactory)");
 		this.cm = cm;
 		this.mcf = mcf;
 	}
@@ -32,7 +33,7 @@ public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactor
 
 	@Override
 	public JobExecutorRegistry getRegistry() throws ResourceException {
-		LOGGER.finer("getRegistry(JobExecutorInfo)");
+		LOGGER.trace("getRegistry(JobExecutorInfo)");
 		return (JobExecutorRegistry) this.cm.allocateConnection(mcf, null);
 	}
 
@@ -41,12 +42,12 @@ public class JobExecutorRegistryFactoryImpl implements JobExecutorRegistryFactor
 	private Reference reference;
 
 	public void setReference(Reference ref) { // setReference is called by the deployment code
-		LOGGER.finer("setReference(Reference)");
+		LOGGER.trace("setReference(Reference)");
 		reference = ref;
 	}
 
 	public Reference getReference() throws NamingException { // getReference is called by the JNDI provider during Context.bind
-		LOGGER.finer("getReference()");
+		LOGGER.trace("getReference()");
 		return reference;
 	}
 

@@ -2,7 +2,6 @@ package org.agito.activiti.jobexecutor.ra;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
@@ -17,10 +16,12 @@ import org.agito.activiti.jobexecutor.ra.impl.JobExecutorActivation;
 import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationAccessor;
 import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationSection;
 import org.agito.activiti.jobexecutor.ra.impl.work.JobAcquisitionWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutorResourceAdapter implements ResourceAdapter {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorResourceAdapter.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorResourceAdapter.class);
 
 	private BootstrapContext bootstrapCtx;
 	private JobExecutorActivation jobExecutorActivation;
@@ -36,7 +37,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 	@Override
 	public void start(BootstrapContext ctx) throws ResourceAdapterInternalException {
-		LOGGER.fine("Starting JobExecutorResourceAdapter with workmanager");
+		LOGGER.debug("Starting JobExecutorResourceAdapter with workmanager");
 		this.bootstrapCtx = ctx;
 
 		initJobAcquisitions();
@@ -44,7 +45,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 	@Override
 	public void stop() {
-		LOGGER.fine("Stopping JobExecutorResourceAdapter");
+		LOGGER.debug("Stopping JobExecutorResourceAdapter");
 		this.bootstrapCtx = null;
 
 		stopJobAcquisitions();
@@ -55,7 +56,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 		if (!JobExecutorActivation.class.isAssignableFrom(activationSpec.getClass()))
 			throw new ResourceException("Invalid activation spec type");
 
-		LOGGER.fine("Activating endpoint JobExecutorActivation");
+		LOGGER.debug("Activating endpoint JobExecutorActivation");
 
 		jobExecutorActivation = (JobExecutorActivation) activationSpec;
 		jobExecutorActivation.validate(); // jca contract
@@ -65,7 +66,7 @@ public class JobExecutorResourceAdapter implements ResourceAdapter {
 
 	@Override
 	public void endpointDeactivation(MessageEndpointFactory mef, ActivationSpec activationSpec) {
-		LOGGER.fine("Deactivating endpoint JobExecutorActivation");
+		LOGGER.debug("Deactivating endpoint JobExecutorActivation");
 		jobExecutorActivation.cleanup();
 	}
 

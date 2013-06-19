@@ -6,15 +6,16 @@ import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.activiti.engine.ActivitiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobConfigurationAccessor {
 
-	private final static Logger LOGGER = Logger.getLogger(JobConfigurationAccessor.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobConfigurationAccessor.class);
 
 	private final static String JOB_CONFIGURATION_LOCATION = "jobexecutoree.properties";
 
@@ -84,15 +85,15 @@ public class JobConfigurationAccessor {
 			isOk = isOk && validateGroupCount(m, 1);
 			if (this.defaultName != null) {
 				isOk = false;
-				LOGGER.severe(MessageFormat.format(
+				LOGGER.error(MessageFormat.format(
 						"ERROR Job executor configuration > {0} > default defined more than once.", m.group(0)));
 				break;
 			}
 			this.defaultName = m.group(1);
-			LOGGER.fine("Job executor configuration > default=" + defaultName);
+			LOGGER.debug("Job executor configuration > default=" + defaultName);
 		}
 		if (defaultName == null) {
-			LOGGER.severe("Job executor configuration misses default.");
+			LOGGER.error("Job executor configuration misses default.");
 			isOk = false;
 		}
 
@@ -110,16 +111,14 @@ public class JobConfigurationAccessor {
 			JobConfigurationSection section = getSection(name);
 
 			if (JobConfigurationSection.FIELD_LOCK_TIME_IN_MILLIS.equals(property)) {
-				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_LOCK_TIME_IN_MILLIS, value);
+				isOk = isOk && validateJobConfigValue(name, JobConfigurationSection.FIELD_LOCK_TIME_IN_MILLIS, value);
 
 				if (isOk)
 					section.setLockTimeInMillis(Integer.valueOf(value));
 
 				infoJobConfigValue(name, property, value);
 			} else if (JobConfigurationSection.FIELD_WAIT_TIME_IN_MILLIS.equals(property)) {
-				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_WAIT_TIME_IN_MILLIS, value);
+				isOk = isOk && validateJobConfigValue(name, JobConfigurationSection.FIELD_WAIT_TIME_IN_MILLIS, value);
 
 				if (isOk)
 					section.setWaitTimeInMillis(Integer.valueOf(value));
@@ -127,15 +126,14 @@ public class JobConfigurationAccessor {
 				infoJobConfigValue(name, property, value);
 			} else if (JobConfigurationSection.FIELD_MAX_JOBS_PER_ACQUISITION.equals(property)) {
 				isOk = isOk
-						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_MAX_JOBS_PER_ACQUISITION,
-								value);
+						&& validateJobConfigValue(name, JobConfigurationSection.FIELD_MAX_JOBS_PER_ACQUISITION, value);
 
 				if (isOk)
 					section.setMaxJobsPerAcquisition(Integer.valueOf(value));
 
 				infoJobConfigValue(name, property, value);
 			} else {
-				LOGGER.severe(MessageFormat.format(
+				LOGGER.error(MessageFormat.format(
 						"Job executor configuration > name={0} > {1}={2} > unknown property ", name, property, value));
 				isOk = false;
 			}
@@ -148,7 +146,7 @@ public class JobConfigurationAccessor {
 	private JobConfigurationSection getSection(String name) {
 		JobConfigurationSection section = sections.get(name);
 		if (section == null) {
-			LOGGER.fine("Job executor configuration > name=" + name);
+			LOGGER.debug("Job executor configuration > name=" + name);
 			section = new JobConfigurationSection();
 			section.setName(name);
 			section.setDefault(name.equals(defaultName));
@@ -182,18 +180,18 @@ public class JobConfigurationAccessor {
 	}
 
 	private void infoJobConfigValue(String name, String property, String value) {
-		LOGGER.fine(MessageFormat.format("Job executor configuration > name={0} > {1}={2}", name, property, value));
+		LOGGER.debug(MessageFormat.format("Job executor configuration > name={0} > {1}={2}", name, property, value));
 	}
 
 	private void errorInvalidJobConfigValue(String name, String field, String value) {
-		LOGGER.severe(MessageFormat.format(
+		LOGGER.error(MessageFormat.format(
 				"Job executor configuration > name={0} > {1}={2} > value must be a valid positive integer.", name,
 				field, value));
 	}
 
 	private boolean validateName(String name, Matcher m) {
 		if (!name.matches(NAME_VALIDATION) && sections.get(name) == null) {
-			LOGGER.severe(MessageFormat.format(
+			LOGGER.error(MessageFormat.format(
 					"ERROR Global configuration > invalid job configuration in '{0}'. Name does not match '{1}'",
 					m.group(0), NAME_VALIDATION));
 			return false;
@@ -203,7 +201,7 @@ public class JobConfigurationAccessor {
 
 	private boolean validateGroupCount(Matcher m, int expectedGroupCount) {
 		if (m.groupCount() != expectedGroupCount) {
-			LOGGER.severe("Invalid job configuration: " + m.group(0));
+			LOGGER.error("Invalid job configuration: " + m.group(0));
 			return false;
 		}
 		return true;

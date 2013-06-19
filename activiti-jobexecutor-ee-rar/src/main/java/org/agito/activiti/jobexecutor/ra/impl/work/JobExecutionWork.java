@@ -1,8 +1,6 @@
 package org.agito.activiti.jobexecutor.ra.impl.work;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.resource.spi.work.Work;
 
@@ -10,10 +8,12 @@ import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.activiti.engine.impl.jobexecutor.JobExecutorContext;
 import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutionWork implements Work {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutionWork.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutionWork.class);
 
 	protected final JobExecutorResourceAdapter resourceAdapter;
 	protected final List<String> jobIds;
@@ -38,7 +38,7 @@ public class JobExecutionWork implements Work {
 		try {
 			while (!currentProcessorJobQueue.isEmpty()) {
 				String nextJobId = currentProcessorJobQueue.remove(0);
-				LOGGER.log(Level.FINE, "Dispatching job {0}.", new Object[] { nextJobId });
+				LOGGER.debug("Dispatching job {}.", new Object[] { nextJobId });
 				resourceAdapter.getJobExecutorActivation().dispatch(nextJobId, commandExecutor);
 			}
 		} finally {

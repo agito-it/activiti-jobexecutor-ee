@@ -1,27 +1,27 @@
 package org.agito.activiti.jobexecutor.ra.impl;
 
-import java.util.logging.Logger;
-
 import javax.resource.ResourceException;
 
 import org.agito.activiti.jobexecutor.JobExecutorEE;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.ra.impl.work.JobAcquisitionWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorRegistryImpl.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorRegistryImpl.class);
 
 	final private JobExecutorManagedConnection managedConnection;
 
 	public JobExecutorRegistryImpl(JobExecutorManagedConnection managedConnection) {
-		LOGGER.finer("JobExecutorRegistryImpl(JobExecutorManagedConnection, JobExecutorInfo)");
+		LOGGER.trace("JobExecutorRegistryImpl(JobExecutorManagedConnection, JobExecutorInfo)");
 		this.managedConnection = managedConnection;
 	}
 
 	@Override
 	public void close() throws ResourceException {
-		LOGGER.finer("close()");
+		LOGGER.trace("close()");
 		if (this.managedConnection != null) {
 			this.managedConnection.closeHandle(this);
 		}
@@ -29,7 +29,7 @@ public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 
 	@Override
 	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
-		LOGGER.finer("registerJobExecutor(jobExecutorEE)");
+		LOGGER.trace("registerJobExecutor(jobExecutorEE)");
 		if (jobExecutorEE.getAcquisitionName() == null) {
 			managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter().getDefaultJobAcquistion()
 					.registerJobExecutor(jobExecutorEE);
@@ -46,7 +46,7 @@ public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 
 	@Override
 	public void detachJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
-		LOGGER.finer("detachJobExecutor(jobExecutorEE)");
+		LOGGER.trace("detachJobExecutor(jobExecutorEE)");
 		if (jobExecutorEE.getAcquisitionName() == null) {
 			managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter().getDefaultJobAcquistion()
 					.detachJobExecutor(jobExecutorEE);

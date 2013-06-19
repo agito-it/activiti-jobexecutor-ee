@@ -1,8 +1,6 @@
 package org.agito.activiti.jobexecutor.ra.impl;
 
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -15,10 +13,12 @@ import javax.resource.spi.endpoint.MessageEndpointFactory;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.agito.activiti.jobexecutor.api.JobExecutorDispatcher;
 import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutorActivation implements JobExecutorDispatcher, ActivationSpec {
 
-	private final static Logger LOGGER = Logger.getLogger(JobExecutorActivation.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorActivation.class);
 
 	private JobExecutorResourceAdapter resourceAdapter;
 	private MessageEndpointFactory messageEndpointFactory;
@@ -56,8 +56,7 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 				}
 			}
 		} catch (UnavailableException e) {
-			LOGGER.log(Level.SEVERE,
-					"UnavailableException while attempting to create messaging endpoint for executing job", e);
+			LOGGER.error("UnavailableException while attempting to create messaging endpoint for executing job", e);
 		}
 	}
 
@@ -69,20 +68,20 @@ public class JobExecutorActivation implements JobExecutorDispatcher, ActivationS
 
 	@Override
 	public ResourceAdapter getResourceAdapter() {
-		LOGGER.finer("call getResourceAdapter()");
+		LOGGER.trace("call getResourceAdapter()");
 		return resourceAdapter;
 	}
 
 	@Override
 	public void setResourceAdapter(ResourceAdapter resourceAdapter) throws ResourceException {
-		LOGGER.finer("setResourceAdapter(resourceAdapter)");
+		LOGGER.trace("setResourceAdapter(resourceAdapter)");
 		if (!JobExecutorResourceAdapter.class.isAssignableFrom(resourceAdapter.getClass()))
 			throw new ResourceException("Invalid resource adapter type");
 		this.resourceAdapter = (JobExecutorResourceAdapter) resourceAdapter;
 	}
 
 	public void setMessageEndpointFactory(MessageEndpointFactory messageEndpointFactory) {
-		LOGGER.finer("setMessageEndpointFactory()");
+		LOGGER.trace("setMessageEndpointFactory()");
 		this.messageEndpointFactory = messageEndpointFactory;
 	}
 

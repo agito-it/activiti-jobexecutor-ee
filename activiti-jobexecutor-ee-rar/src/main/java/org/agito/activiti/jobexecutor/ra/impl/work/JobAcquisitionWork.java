@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkEvent;
@@ -22,10 +20,12 @@ import org.agito.activiti.jobexecutor.JobExecutorEE;
 import org.agito.activiti.jobexecutor.JobWasAddedCallback;
 import org.agito.activiti.jobexecutor.ra.JobExecutorResourceAdapter;
 import org.agito.activiti.jobexecutor.ra.impl.config.JobConfigurationSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobAcquisitionWork implements Work {
 
-	private final static Logger LOGGER = Logger.getLogger(JobAcquisitionWork.class.getName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(JobAcquisitionWork.class);
 
 	protected final static long SCHEDULE_WORK_START_TIMEOUT = 2000;
 
@@ -67,8 +67,8 @@ public class JobAcquisitionWork implements Work {
 
 		};
 
-		LOGGER.log(Level.INFO, "{0} Job acquisition {1} created. default={2}",
-				new Object[] { name, configuration.getName(), configuration.isDefault() });
+		LOGGER.info("{} Job acquisition {} created. default={}", new Object[] { name, configuration.getName(),
+				configuration.isDefault() });
 	}
 
 	@Override
@@ -80,9 +80,9 @@ public class JobAcquisitionWork implements Work {
 		// synchronized to avoid side effects by registration/detachment
 		synchronized (jobExecutors) {
 			if (!isInterrupted) {
-				LOGGER.fine(name + " job acquisition thread starts.");
+				LOGGER.debug(name + " job acquisition thread starts.");
 			} else {
-				LOGGER.fine(name + " job executor not active anymore. cancelling job acquisition thread.");
+				LOGGER.debug(name + " job executor not active anymore. cancelling job acquisition thread.");
 				return;
 			}
 
@@ -107,12 +107,12 @@ public class JobAcquisitionWork implements Work {
 				for (List<String> jobIds : acquiredJobs.getJobIdBatches()) {
 					// get jobs done by work manager thread, block until workManager starts running
 					JobExecutionWork jobExecution = new JobExecutionWork(resourceAdapter, jobIds, commandExecutor);
-					LOGGER.log(Level.FINER, "{0} start work for jobIds {1}", new Object[] { name, jobIds });
+					LOGGER.trace("{} start work for jobIds {}", new Object[] { name, jobIds });
 					try {
 						resourceAdapter.getBootstrapCtx().getWorkManager()
 								.startWork(jobExecution, SCHEDULE_WORK_START_TIMEOUT, null, null);
 					} catch (WorkRejectedException e) {
-						LOGGER.warning("WorkManager rejected JobExecution with "
+						LOGGER.warn("WorkManager rejected JobExecution with "
 								+ e.getMessage()
 								+ " > Code "
 								+ e.getErrorCode()
@@ -130,7 +130,7 @@ public class JobAcquisitionWork implements Work {
 
 			} catch (Exception e) {
 
-				LOGGER.log(Level.SEVERE, name + " exception during job acquisition: " + e.getMessage(), e);
+				LOGGER.error(name + " exception during job acquisition: " + e.getMessage(), e);
 
 				jobExecutionFailed = true;
 				activeJobExecutorsStack.push(jobExecutor);
@@ -164,24 +164,24 @@ public class JobAcquisitionWork implements Work {
 
 		if ((millisToWait > 0) && (!isJobAdded)) {
 			try {
-				LOGGER.fine(name + " job acquisition thread sleeping for " + millisToWait + " millis");
+				LOGGER.debug(name + " job acquisition thread sleeping for " + millisToWait + " millis");
 				synchronized (MONITOR) {
 					if (!isInterrupted) {
 						isWaiting.set(true);
 						MONITOR.wait(millisToWait);
 					}
 				}
-				LOGGER.fine(name + " job acquisition thread woke up");
+				LOGGER.debug(name + " job acquisition thread woke up");
 				isJobAdded = false;
 			} catch (InterruptedException e) {
-				LOGGER.fine(name + " job acquisition wait interrupted");
+				LOGGER.debug(name + " job acquisition wait interrupted");
 			} finally {
 				isWaiting.set(false);
 			}
 		}
 
 		if (!isInterrupted) {
-			LOGGER.fine(name + " job acquisition thread restarting.");
+			LOGGER.debug(name + " job acquisition thread restarting.");
 			restartAcquisition();
 		}
 	}
@@ -198,22 +198,22 @@ public class JobAcquisitionWork implements Work {
 			resourceAdapter.getBootstrapCtx().getWorkManager()
 					.scheduleWork(this, SCHEDULE_WORK_START_TIMEOUT, null, acquisitionRetryWorkListener);
 		} catch (WorkRejectedException e) {
-			LOGGER.log(Level.FINE, name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
-			LOGGER.log(Level.WARNING, name + " JobAcquisitionWork rejected: " + e.getMessage());
+			LOGGER.debug(name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
+			LOGGER.warn(name + " JobAcquisitionWork rejected: " + e.getMessage());
 		} catch (WorkException e) {
-			LOGGER.log(Level.SEVERE, name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
+			LOGGER.error(name + " exception during scheduleWork of job acquisition: " + e.getMessage(), e);
 		}
 	}
 
 	protected void start() {
-		LOGGER.finer("start()");
+		LOGGER.trace("start()");
 		isInterrupted = false;
 		restartAcquisition();
 		isActive = true;
 	}
 
 	protected void stop() {
-		LOGGER.finer("stop()");
+		LOGGER.trace("stop()");
 		synchronized (MONITOR) {
 			isInterrupted = true;
 			if (isWaiting.compareAndSet(true, false)) {
@@ -277,13 +277,13 @@ public class JobAcquisitionWork implements Work {
 				jobExecutors.clear();
 				stop();
 			}
-			LOGGER.log(Level.INFO, "{0} Job acquisition stopped.", new Object[] { name });
+			LOGGER.info("{} Job acquisition stopped.", new Object[] { name });
 		}
 
 	}
 
 	public void jobWasAdded() {
-		LOGGER.log(Level.FINER, name + " jobWasAdded notification");
+		LOGGER.debug(name + " jobWasAdded notification");
 		isJobAdded = true;
 		if (isWaiting.compareAndSet(true, false)) {
 			// ensures we only notify once
@@ -338,14 +338,15 @@ public class JobAcquisitionWork implements Work {
 
 		@Override
 		public void workRejected(WorkEvent event) {
-			LOGGER.log(Level.WARNING, "Work {0} rejected with code {1}. Will retry.", new Object[] {
+			LOGGER.warn("Work {} rejected with code {}. Will retry.", new Object[] {
 					event.getWork().getClass().getName(), event.getType() });
 			try {
 				resourceAdapter.getBootstrapCtx().getWorkManager()
 						.scheduleWork(event.getWork(), SCHEDULE_WORK_START_TIMEOUT, null, this);
 			} catch (WorkException e) {
-				LOGGER.log(Level.SEVERE, "exception during scheduleWork of work "
-						+ event.getWork().getClass().getName() + ": " + e.getMessage(), e);
+				LOGGER.error(
+						"exception during scheduleWork of work " + event.getWork().getClass().getName() + ": "
+								+ e.getMessage(), e);
 			}
 		}
 
