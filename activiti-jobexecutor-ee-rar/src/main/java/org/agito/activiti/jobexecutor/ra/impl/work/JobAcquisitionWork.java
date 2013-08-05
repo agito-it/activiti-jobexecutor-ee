@@ -241,6 +241,8 @@ public class JobAcquisitionWork implements Work {
 
 			jobExecutors.put(jobExecutorEE.getName(), jobExecutorEE);
 
+			LOGGER.debug(name + " " + jobExecutorEE.getName() + " registered.");
+
 			if (!isActive) {
 				start();
 			}
@@ -259,6 +261,8 @@ public class JobAcquisitionWork implements Work {
 			jobExecutorEE.setJobWasAddedCallback(null);
 
 			jobExecutors.remove(jobExecutorEE.getName());
+
+			LOGGER.debug(name + " " + jobExecutorEE.getName() + " deregistered.");
 
 			if (isActive && jobExecutors.size() == 0) {
 				stop();

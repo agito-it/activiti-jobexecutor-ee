@@ -7,6 +7,9 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.interceptor.Command;
+import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.jobexecutor.JobExecutor;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistry;
 import org.agito.activiti.jobexecutor.api.JobExecutorRegistryFactory;
@@ -31,6 +34,12 @@ public class JobExecutorEE extends JobExecutor {
 	protected String acquisitionName;
 	protected JobWasAddedCallback jobWasAddedCallback;
 	protected final Object JOB_WAS_ADDED_MONITOR = new Object();
+
+	@Override
+	public void start() {
+		setName();
+		super.start();
+	}
 
 	@Override
 	protected void startExecutingJobs() {
@@ -119,4 +128,12 @@ public class JobExecutorEE extends JobExecutor {
 		return acquisitionName;
 	}
 
+	public void setName() {
+		super.name = JobExecutorEE.class.getSimpleName() + "[" + commandExecutor.execute(new Command<String>() {
+			@Override
+			public String execute(CommandContext commandContext) {
+				return Context.getProcessEngineConfiguration().getProcessEngineName();
+			}
+		}) + "]";
+	}
 }
