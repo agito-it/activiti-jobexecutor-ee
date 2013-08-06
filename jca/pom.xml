@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.agito</groupId>
+		<artifactId>activiti-jobexecutor-ee-parent</artifactId>
+		<version>1.0.6-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+	<artifactId>activiti-jobexecutor-ee-jca</artifactId>
+	<name>activiti JobExecutor EE JCA</name>
+	<description>activiti JobExecutor EE JCA</description>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>activiti-jobexecutor-ee-jca-ejb</module>
+		<module>activiti-jobexecutor-ee-jca-rar</module>
+		<module>activiti-jobexecutor-ee-jca-ear</module>
+	</modules>
+
+</project>

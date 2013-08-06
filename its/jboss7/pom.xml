@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.agito</groupId>
+		<artifactId>activiti-jobexecutor-ee-parent</artifactId>
+		<version>1.0.6-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+	
+	<artifactId>activiti-jobexecutor-ee-its-jboss7-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>activiti JobExecutor EE ITS JBoss7 (JCA) Parent</name>
+	<description>activiti JobExecutor EE ITS JBoss7 (JCA) Parent</description>
+
+	<properties>
+		<jboss.as.version>7.1.1.Final</jboss.as.version>
+		<arquillian.version>1.0.1.Final</arquillian.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+		<module>modules</module>
+		<module>server</module>
+		<module>tests</module>
+	</modules>
+
+</project>

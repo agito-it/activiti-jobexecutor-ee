@@ -4,13 +4,13 @@
 	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>activiti JobExecutor EE</name>
-	<description>activiti JobExecutor EE</description>
+	<name>activiti JobExecutor EE Parent</name>
+	<description>activiti JobExecutor EE Parent</description>
 
 	<parent>
 		<groupId>de.agito.infra.dev</groupId>
 		<artifactId>super-pom</artifactId>
-		<version>0.1.8</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<properties>
@@ -20,9 +20,8 @@
 
 	<modules>
 		<module>activiti-jobexecutor-ee-api</module>
-		<module>activiti-jobexecutor-ee-ejb</module>
-		<module>activiti-jobexecutor-ee-rar</module>
-		<module>activiti-jobexecutor-ee-ear</module>
+		<module>jca</module>
+		<module>its/jboss7</module>
 	</modules>
 
 	<build>
@@ -34,6 +33,14 @@
 		</plugins>
 
 	</build>
+
+	<repositories>
+		<repository>
+			<id>agito-repository</id>
+			<name>agito-repository</name>
+			<url>https://service.agito-it.com/nexus/content/groups/public</url>
+		</repository>
+	</repositories>  
 
 	<scm>
 		<connection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</connection>

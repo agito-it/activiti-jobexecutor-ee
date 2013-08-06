@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="processEngineConfiguration" class="org.agito.activiti.jboss7.engine.impl.JtaProcessEngineConfiguration">
+
+		<property name="dataSourceJndiName" value="java:jboss/datasources/ActivitiDS" />
+
+		<!-- Database configurations -->
+		<property name="databaseSchemaUpdate" value="true" />
+
+		<!-- job executor configurations -->
+		<property name="jobExecutorActivate" value="true" />
+		
+		<!-- configure job acquisition -->
+		<property name="jobAcquisitionName" value="ONE" />
+
+	</bean>
+
+</beans>

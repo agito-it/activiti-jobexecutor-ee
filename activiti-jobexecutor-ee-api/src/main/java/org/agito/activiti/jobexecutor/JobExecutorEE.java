@@ -128,7 +128,7 @@ public class JobExecutorEE extends JobExecutor {
 		return acquisitionName;
 	}
 
-	public void setName() {
+	protected void setName() {
 		super.name = JobExecutorEE.class.getSimpleName() + "[" + commandExecutor.execute(new Command<String>() {
 			@Override
 			public String execute(CommandContext commandContext) {

@@ -1,0 +1,22 @@
+<module xmlns="urn:jboss:module:1.0" name="org.activiti.activiti-engine">
+	<resources>
+		<resource-root path="activiti-engine-@activiti.version@.jar" />
+	</resources>
+
+	<dependencies>
+
+		<module name="javax.api" />
+		<module name="javax.transaction.api" />
+
+		<module name="org.mybatis.mybatis" />
+		<module name="org.joda.time" slot="2.1" export="true" />
+		
+		<module name="org.slf4j" />
+		
+		<module name="org.activiti.activiti-bpmn-model" export="true" />
+		<module name="org.activiti.activiti-bpmn-converter" export="true" />
+		
+		<module name="org.apache.commons.lang" />
+
+	</dependencies>
+</module>

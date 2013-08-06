@@ -1,0 +1,145 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.agito</groupId>
+		<artifactId>activiti-jobexecutor-ee-its-jboss7-parent</artifactId>
+		<version>1.0.6-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+
+	<artifactId>activiti-jobexecutor-ee-its-jboss7-modules</artifactId>
+	<packaging>pom</packaging>
+	<name>activiti JobExecutor EE ITS JBoss7 (JCA) Modules</name>
+	<description>activiti JobExecutor EE ITS JBoss7 (JCA) Modules</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.agito</groupId>
+			<artifactId>activiti-jobexecutor-ee-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-engine</artifactId>
+			<version>${activiti.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-email</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>joda-time</groupId>
+					<artifactId>joda-time</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-bpmn-converter</artifactId>
+			<version>${activiti.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-bpmn-model</artifactId>
+			<version>${activiti.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<dependencyfilesets scopes="compile" />
+
+								<mkdir dir="target/modules" />
+
+								<!-- copy all files -->
+								<copy todir="target/modules" flatten="false">
+									<fileset refid="maven.project.dependencies" />
+									<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3"
+										handledirsep="yes" />
+								</copy>
+
+								<delete dir="target/modules/org.agito" />
+
+								<!-- copy all files again, but this only matches files and this treatment 
+									makes is maven 2/3 compatible => timestamped snapshot -->
+								<copy todir="target/modules" flatten="false">
+									<fileset refid="maven.project.dependencies" />
+									<mapper>
+										<chainedmapper>
+											<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3"
+												handledirsep="yes" />
+										</chainedmapper>
+									</mapper>
+								</copy>
+
+								<copy todir="target/modules" flatten="false">
+									<fileset dir="src/modules" />
+								</copy>
+
+								<replace dir="target/modules" token="@project.version@"
+									value="${project.version}">
+									<include name="**/module.xml" />
+								</replace>
+								<replace dir="target/modules" token="@activiti.version@"
+									value="${activiti.version}">
+									<include name="**/module.xml" />
+								</replace>
+								<replace dir="target/modules" token="@activiti-jobexecutor-ee.version@"
+									value="${activiti-jobexecutor-ee.version}">
+									<include name="**/module.xml" />
+								</replace>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>joda-time</groupId>
+									<artifactId>joda-time</artifactId>
+									<version>2.1</version>
+									<outputDirectory>${project.build.directory}/modules/org/joda/time/2.1/</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
