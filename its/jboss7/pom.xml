@@ -16,7 +16,7 @@
 
 	<properties>
 		<jboss.as.version>7.1.1.Final</jboss.as.version>
-		<arquillian.version>1.0.1.Final</arquillian.version>
+		<arquillian.version>1.1.0.Final</arquillian.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 

@@ -91,8 +91,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.shrinkwrap.resolver</groupId>
-			<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+			<artifactId>shrinkwrap-resolver-depchain</artifactId>
 			<scope>test</scope>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 

@@ -1,13 +1,11 @@
 package org.agito.activiti.jboss7.its;
 
-import java.util.Collection;
 import java.util.Properties;
 
 import org.agito.activiti.jboss7.engine.impl.JobExecutorProcessEngineConfiguration;
 import org.agito.activiti.jboss7.engine.impl.JtaProcessEngineConfiguration;
 import org.jboss.shrinkwrap.api.spec.ResourceAdapterArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
 public class AbstractContainerTest {
 
@@ -29,16 +27,14 @@ public class AbstractContainerTest {
 		if (CACHED_JCA_ASSET != null) {
 			return CACHED_JCA_ASSET;
 		} else {
-			MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class)
-					.loadMetadataFromPom("pom.xml");
-			Collection<ResourceAdapterArchive> resolvedArchives = resolver.artifact(
-					"org.agito:activiti-jobexecutor-ee-jca-rar:rar:" + getJobExecutorVersion()).resolveAs(
-					ResourceAdapterArchive.class);
+			ResourceAdapterArchive archive = Maven.resolver().loadPomFromFile("pom.xml")
+					.resolve("org.agito:activiti-jobexecutor-ee-jca-rar:rar:" + getJobExecutorVersion())
+					.withoutTransitivity().asSingle(ResourceAdapterArchive.class);
 
-			if (resolvedArchives.size() == 0) {
+			if (archive == null) {
 				throw new RuntimeException("could not resolve org.agito:activiti-jobexecutor-ee-jca-rar");
 			} else {
-				CACHED_JCA_ASSET = resolvedArchives.iterator().next();
+				CACHED_JCA_ASSET = archive;
 				return CACHED_JCA_ASSET;
 			}
 		}
