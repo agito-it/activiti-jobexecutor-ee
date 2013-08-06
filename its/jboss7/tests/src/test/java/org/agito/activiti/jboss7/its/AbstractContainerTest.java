@@ -29,7 +29,7 @@ public class AbstractContainerTest {
 		if (CACHED_JCA_ASSET != null) {
 			return CACHED_JCA_ASSET;
 		} else {
-			MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class).goOffline()
+			MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class)
 					.loadMetadataFromPom("pom.xml");
 			Collection<ResourceAdapterArchive> resolvedArchives = resolver.artifact(
 					"org.agito:activiti-jobexecutor-ee-jca-rar:rar:" + getJobExecutorVersion()).resolveAs(
