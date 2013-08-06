@@ -134,6 +134,13 @@
 									<version>2.1</version>
 									<outputDirectory>${project.build.directory}/modules/org/joda/time/2.1/</outputDirectory>
 								</artifactItem>
+								<artifactItem>
+									<groupId>org.agito</groupId>
+									<artifactId>activiti-jobexecutor-ee-api</artifactId>
+									<version>${project.version}</version>
+									<outputDirectory>${project.build.directory}/modules/org/agito/activiti-jobexecutor-ee-api/main</outputDirectory>
+									<destFileName>activiti-jobexecutor-ee-api-${project.version}.jar</destFileName>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>
