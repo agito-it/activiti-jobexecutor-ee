@@ -4,15 +4,16 @@ This project contains a enterprise ready job executor for [Activiti](http://acti
 
 ## Scope of this Project:
 * Decouple Job Acquisition from Process Engines
-** Configure Acquition Workers
-*** maxJobsPerAcquisition
-*** lockTimeInMillis
-*** waitTimeInMillis
-** Assign Process Engines to Acquisition Workers (Multiple Engines can be assigned to one acquisition worker)
+    - Configure Acquition Workers
+        + maxJobsPerAcquisition
+        + lockTimeInMillis
+        + waitTimeInMillis
+    - Assign Process Engines to Acquisition Workers (Multiple Engines can be assigned to one acquisition worker)
 * Job Executor EE implementation using the Java Connector Architecture (JCA)
-** JEE 1.5 and 1.6 compliant.
-** Obtain threads from standard Work Manager provided by Application Servers.
-** Dispatch job execution into Message Driven Bean and use default Job Execution Command from Activiti.
+    - JEE 1.5 and 1.6 compliant.
+    - Obtain threads from standard Work Manager provided by Application Servers.
+    - Dispatch job execution to Message Driven Bean for entering the JEE container (synchronous invocation, no JMS).
+    - Use default Job Execution Command from Activiti.
 * Integrated Test Suite (ITS) showing how to use it.
 
 ## Out of Scope
