@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class JobExecutorMultiEnginesTest extends JobExecutorTestCase {
+public class JobExecutorMultiEnginesTest extends AbstractTweetTest {
 
 	private final static String PROCESS_ENGINE_1 = "ActivitiDS";
 	private final static String PROCESS_ENGINE_2 = "ActivitiDS_2";
@@ -113,7 +113,7 @@ public class JobExecutorMultiEnginesTest extends JobExecutorTestCase {
 
 			waitForJobExecutorToProcessAllJobs(30000L, 200L);
 
-			Set<String> messages = new HashSet<String>(tweetHandler.getMessages());
+			Set<String> messages = new HashSet<String>(jobHandler.getMessages());
 			Set<String> expectedMessages = new HashSet<String>();
 			expectedMessages.add("message-1-one");
 			expectedMessages.add("message-1-two");

@@ -4,6 +4,7 @@
 	</resources>
 
 	<dependencies>
+		<module name="org.activiti.activiti-bpmn-model" />
 		<module name="org.apache.commons.lang" />
 	</dependencies>
 </module>

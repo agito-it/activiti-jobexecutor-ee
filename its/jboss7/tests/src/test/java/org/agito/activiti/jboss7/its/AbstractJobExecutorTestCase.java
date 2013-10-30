@@ -1,6 +1,5 @@
 package org.agito.activiti.jboss7.its;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,11 +11,10 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.ProcessEngineImpl;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.jobexecutor.JobExecutor;
-import org.activiti.engine.impl.persistence.entity.MessageEntity;
-import org.activiti.engine.impl.persistence.entity.TimerEntity;
+import org.activiti.engine.impl.jobexecutor.JobHandler;
 import org.agito.activiti.jboss7.engine.impl.JobExecutorProcessEngineConfiguration;
 
-public abstract class JobExecutorTestCase extends AbstractContainerTest {
+public abstract class AbstractJobExecutorTestCase<T extends JobHandler> extends AbstractContainerTest {
 
 	public final static String JOB_ACQUISITION_1 = "ONE";
 	public final static String JOB_ACQUISITION_2 = "TWO";
@@ -24,9 +22,10 @@ public abstract class JobExecutorTestCase extends AbstractContainerTest {
 	protected Map<String, ProcessEngineConfigurationImpl> processEngineConfigurations;
 	protected Map<String, ProcessEngineImpl> processEngines;
 
-	protected TweetHandler tweetHandler = new TweetHandler();
+	protected T jobHandler;
 
 	public void setUp() throws Exception {
+		jobHandler = initJobHandler();
 		processEngineConfigurations = new HashMap<String, ProcessEngineConfigurationImpl>();
 		processEngines = new HashMap<String, ProcessEngineImpl>();
 		for (String processEngineName : configureProcessEngineNames()) {
@@ -36,7 +35,7 @@ public abstract class JobExecutorTestCase extends AbstractContainerTest {
 			processEngineConfigurations.put(processEngineName, processEngineConfiguration);
 			processEngines.put(processEngineName, processEngine);
 
-			processEngineConfiguration.getJobHandlers().put(tweetHandler.getType(), tweetHandler);
+			processEngineConfiguration.getJobHandlers().put(jobHandler.getType(), jobHandler);
 		}
 
 	}
@@ -47,27 +46,12 @@ public abstract class JobExecutorTestCase extends AbstractContainerTest {
 			ProcessEngineImpl processEngine = processEngines.get(e.getKey());
 
 			if (processEngineConfiguration.getJobHandlers() != null)
-				processEngineConfiguration.getJobHandlers().remove(tweetHandler.getType());
+				processEngineConfiguration.getJobHandlers().remove(jobHandler.getType());
 
 			if (processEngine != null)
 				processEngine.close();
 		}
 
-	}
-
-	protected MessageEntity createTweetMessage(String msg) {
-		MessageEntity message = new MessageEntity();
-		message.setJobHandlerType("tweet");
-		message.setJobHandlerConfiguration(msg);
-		return message;
-	}
-
-	protected TimerEntity createTweetTimer(String msg, Date duedate) {
-		TimerEntity timer = new TimerEntity();
-		timer.setJobHandlerType("tweet");
-		timer.setJobHandlerConfiguration(msg);
-		timer.setDuedate(duedate);
-		return timer;
 	}
 
 	public void waitForJobExecutorToProcessAllJobs(long maxMillisToWait, long intervalMillis) {
@@ -170,8 +154,14 @@ public abstract class JobExecutorTestCase extends AbstractContainerTest {
 		return ret;
 	}
 
+	public T getJobHandler() {
+		return jobHandler;
+	}
+
 	public abstract String configureJobAcquisitionForProcessEngine(String processEngine);
 
 	public abstract String[] configureProcessEngineNames();
+
+	protected abstract T initJobHandler();
 
 }
