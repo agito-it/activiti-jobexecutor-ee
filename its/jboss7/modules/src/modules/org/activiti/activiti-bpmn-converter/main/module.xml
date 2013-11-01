@@ -4,7 +4,10 @@
 	</resources>
 
 	<dependencies>
-		<module name="org.activiti.activiti-bpmn-model" />
+		<module name="javax.api" />
+		<module name="javax.xml.stream.api" />
 		<module name="org.apache.commons.commons-lang3" />
+		<module name="org.slf4j" />
+		<module name="org.activiti.activiti-bpmn-model" export="true" />
 	</dependencies>
 </module>
