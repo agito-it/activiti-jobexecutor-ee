@@ -1,0 +1,9 @@
+<module xmlns="urn:jboss:module:1.0" name="org.codehaus.jackson.jackson-core-asl" slot="1.9.9">
+	<resources>
+		<resource-root path="jackson-core-asl-1.9.9.jar" />
+	</resources>
+
+	<dependencies>
+		<module name="javax.api" />
+	</dependencies>
+</module>

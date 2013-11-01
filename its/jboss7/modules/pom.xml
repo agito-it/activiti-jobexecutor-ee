@@ -33,8 +33,12 @@
 					<artifactId>spring-beans</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>commons-lang</groupId>
-					<artifactId>commons-lang</artifactId>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>joda-time</groupId>
@@ -46,11 +50,35 @@
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-bpmn-converter</artifactId>
 			<version>${activiti.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-bpmn-model</artifactId>
 			<version>${activiti.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl-over-slf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-core-asl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -81,8 +109,7 @@
 
 								<delete dir="target/modules/org.agito" />
 
-								<!-- copy all files again, but this only matches files and this treatment 
-									makes is maven 2/3 compatible => timestamped snapshot -->
+								<!-- copy all files again, but this only matches files and this treatment makes is maven 2/3 compatible => timestamped snapshot -->
 								<copy todir="target/modules" flatten="false">
 									<fileset refid="maven.project.dependencies" />
 									<mapper>
@@ -127,6 +154,12 @@
 									<artifactId>joda-time</artifactId>
 									<version>2.1</version>
 									<outputDirectory>${project.build.directory}/modules/org/joda/time/2.1/</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.codehaus.jackson</groupId>
+									<artifactId>jackson-core-asl</artifactId>
+									<version>1.9.9</version>
+									<outputDirectory>${project.build.directory}/modules/org/codehaus/jackson/jackson-core-asl/1.9.9/</outputDirectory>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.agito</groupId>

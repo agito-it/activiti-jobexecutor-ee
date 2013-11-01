@@ -5,6 +5,6 @@
 
 	<dependencies>
 		<module name="org.activiti.activiti-bpmn-model" />
-		<module name="org.apache.commons.lang" />
+		<module name="org.apache.commons.commons-lang3" />
 	</dependencies>
 </module>

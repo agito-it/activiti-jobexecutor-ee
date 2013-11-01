@@ -4,7 +4,7 @@
 	</resources>
 
 	<dependencies>
-	    <module name="org.apache.commons.lang" />
-		<module name="org.codehaus.jackson.jackson-core-asl" />
+		<module name="org.apache.commons.commons-lang3" />
+		<module name="org.codehaus.jackson.jackson-core-asl" slot="1.9.9" />
 	</dependencies>
 </module>

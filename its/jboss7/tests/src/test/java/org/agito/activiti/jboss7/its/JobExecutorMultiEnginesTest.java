@@ -60,8 +60,7 @@ public class JobExecutorMultiEnginesTest extends AbstractTweetTest {
 		try {
 			setUp();
 
-			CommandExecutor commandExecutor1 = processEngineConfigurations.get(PROCESS_ENGINE_1)
-					.getCommandExecutorTxRequired();
+			CommandExecutor commandExecutor1 = processEngineConfigurations.get(PROCESS_ENGINE_1).getCommandExecutor();
 			commandExecutor1.execute(new Command<Void>() {
 				public Void execute(CommandContext commandContext) {
 					JobEntityManager jobManager = commandContext.getJobEntityManager();
@@ -77,8 +76,7 @@ public class JobExecutorMultiEnginesTest extends AbstractTweetTest {
 				}
 			});
 
-			CommandExecutor commandExecutor2 = processEngineConfigurations.get(PROCESS_ENGINE_2)
-					.getCommandExecutorTxRequired();
+			CommandExecutor commandExecutor2 = processEngineConfigurations.get(PROCESS_ENGINE_2).getCommandExecutor();
 			commandExecutor2.execute(new Command<Void>() {
 				public Void execute(CommandContext commandContext) {
 					JobEntityManager jobManager = commandContext.getJobEntityManager();
@@ -94,8 +92,7 @@ public class JobExecutorMultiEnginesTest extends AbstractTweetTest {
 				}
 			});
 
-			CommandExecutor commandExecutor3 = processEngineConfigurations.get(PROCESS_ENGINE_3)
-					.getCommandExecutorTxRequired();
+			CommandExecutor commandExecutor3 = processEngineConfigurations.get(PROCESS_ENGINE_3).getCommandExecutor();
 			commandExecutor3.execute(new Command<Void>() {
 				public Void execute(CommandContext commandContext) {
 					JobEntityManager jobManager = commandContext.getJobEntityManager();

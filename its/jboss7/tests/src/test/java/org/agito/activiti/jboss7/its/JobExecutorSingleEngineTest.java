@@ -51,8 +51,7 @@ public class JobExecutorSingleEngineTest extends AbstractTweetTest {
 		try {
 			setUp();
 
-			CommandExecutor commandExecutor = processEngineConfigurations.get(PROCESS_ENGINE_1)
-					.getCommandExecutorTxRequired();
+			CommandExecutor commandExecutor = processEngineConfigurations.get(PROCESS_ENGINE_1).getCommandExecutor();
 			commandExecutor.execute(new Command<Void>() {
 				public Void execute(CommandContext commandContext) {
 					JobEntityManager jobManager = commandContext.getJobEntityManager();

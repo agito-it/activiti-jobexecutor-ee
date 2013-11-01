@@ -57,7 +57,7 @@ public class JobExecutorErrorTestCase extends AbstractJobExecutorTestCase<ErrorJ
 			setUp();
 
 			CommandExecutor commandExecutor = processEngineConfigurations.get(PROCESS_ENGINE_1)
-					.getCommandExecutorTxRequired();
+					.getCommandExecutor();
 
 			// enable errors
 			jobHandler.errorMode = 1;

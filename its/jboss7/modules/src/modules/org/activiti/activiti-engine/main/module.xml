@@ -16,7 +16,7 @@
 		<module name="org.activiti.activiti-bpmn-model" export="true" />
 		<module name="org.activiti.activiti-bpmn-converter" export="true" />
 		
-		<module name="org.apache.commons.lang" />
+		<module name="org.apache.commons.commons-lang3" />
 
 	</dependencies>
 </module>
