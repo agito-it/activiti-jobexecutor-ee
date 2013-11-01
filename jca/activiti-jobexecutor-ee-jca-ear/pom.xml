@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.agito</groupId>
 		<artifactId>activiti-jobexecutor-ee-jca</artifactId>
-		<version>1.0.8</version>
+		<version>1.0.9-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>activiti-jobexecutor-ee-jca-ear</artifactId>
