@@ -30,6 +30,14 @@ public class JobExecutorRegistryImpl implements JobExecutorRegistry {
 	@Override
 	public void registerJobExecutor(JobExecutorEE jobExecutorEE) throws ResourceException {
 		LOGGER.trace("registerJobExecutor(jobExecutorEE)");
+
+		// block registration in case the job executor dispatcher is not available
+		if (null == managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter()
+				.getJobExecutorActivation()) {
+			throw new ResourceException(
+					"JobExecutorDispatcher is not ready yet. Ensure that the Job Executor Message Driven Bean is deployed and mapped to the Job Executor Resource Adapter.");
+		}
+
 		if (jobExecutorEE.getAcquisitionName() == null) {
 			managedConnection.getJobExecutorManagedConnectionFactory().getResourceAdapter().getDefaultJobAcquistion()
 					.registerJobExecutor(jobExecutorEE);
