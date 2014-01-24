@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.agito</groupId>
 	<artifactId>activiti-jobexecutor-ee-parent</artifactId>
-	<version>1.0.9</version>
+	<version>1.0.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>activiti JobExecutor EE Parent</name>
 	<description>activiti JobExecutor EE Parent</description>
@@ -46,7 +46,7 @@
 		<connection>scm:git:git://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</connection>
 		<developerConnection>scm:git:ssh://git@git.agito.corp/srv/git/browse/ACTIVITI/activiti-jobexecutor-ee.git</developerConnection>
 		<url>http://git.agito.corp/ACTIVITI/activiti-jobexecutor-ee.git</url>
-	  <tag>1.0.9</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 </project>
