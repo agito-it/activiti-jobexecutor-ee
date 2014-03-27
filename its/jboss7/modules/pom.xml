@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.agito</groupId>
 		<artifactId>activiti-jobexecutor-ee-its-jboss7-parent</artifactId>
-		<version>1.0.10-SNAPSHOT</version>
+		<version>1.0.10</version>
 		<relativePath>../</relativePath>
 	</parent>
 
@@ -116,8 +115,7 @@
 								<!-- copy all files -->
 								<copy todir="target/modules" flatten="false">
 									<fileset refid="maven.project.dependencies" />
-									<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3"
-										handledirsep="yes" />
+									<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3" handledirsep="yes" />
 								</copy>
 
 								<delete dir="target/modules/org.agito" />
@@ -128,8 +126,7 @@
 									<fileset refid="maven.project.dependencies" />
 									<mapper>
 										<chainedmapper>
-											<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3"
-												handledirsep="yes" />
+											<regexpmapper from="^(.*)/([^/]+)/([^/]*)$$" to="\1/main/\3" handledirsep="yes" />
 										</chainedmapper>
 									</mapper>
 								</copy>
@@ -138,16 +135,13 @@
 									<fileset dir="src/modules" />
 								</copy>
 
-								<replace dir="target/modules" token="@project.version@"
-									value="${project.version}">
+								<replace dir="target/modules" token="@project.version@" value="${project.version}">
 									<include name="**/module.xml" />
 								</replace>
-								<replace dir="target/modules" token="@activiti.version@"
-									value="${activiti.version}">
+								<replace dir="target/modules" token="@activiti.version@" value="${activiti.version}">
 									<include name="**/module.xml" />
 								</replace>
-								<replace dir="target/modules" token="@activiti-jobexecutor-ee.version@"
-									value="${activiti-jobexecutor-ee.version}">
+								<replace dir="target/modules" token="@activiti-jobexecutor-ee.version@" value="${activiti-jobexecutor-ee.version}">
 									<include name="**/module.xml" />
 								</replace>
 							</target>
