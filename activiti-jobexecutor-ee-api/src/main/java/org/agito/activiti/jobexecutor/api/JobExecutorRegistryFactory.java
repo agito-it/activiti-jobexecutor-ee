@@ -10,6 +10,9 @@ import javax.resource.ResourceException;
  */
 public interface JobExecutorRegistryFactory {
 
+	/**
+	 * Default name in JNDI.
+	 */
 	public final static String JNDI = "env/ActivitiJobExecutor";
 
 	public JobExecutorRegistry getRegistry() throws ResourceException;

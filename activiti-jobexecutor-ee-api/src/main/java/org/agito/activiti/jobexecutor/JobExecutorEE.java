@@ -31,6 +31,7 @@ public class JobExecutorEE extends JobExecutor {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(JobExecutorEE.class);
 
+	protected String jobExecutorRegistryJndiName = JobExecutorRegistryFactory.JNDI;
 	protected String acquisitionName;
 	protected JobWasAddedCallback jobWasAddedCallback;
 	protected final Object JOB_WAS_ADDED_MONITOR = new Object();
@@ -46,12 +47,9 @@ public class JobExecutorEE extends JobExecutor {
 		JobExecutorRegistry registry = null;
 		try {
 			synchronized (JOB_WAS_ADDED_MONITOR) {
-				registry = ((JobExecutorRegistryFactory) InitialContext.doLookup(JobExecutorRegistryFactory.JNDI))
-						.getRegistry();
+				registry = lookupJobExecutorRegistryFactory().getRegistry();
 				registry.registerJobExecutor(this);
 			}
-		} catch (NamingException e) {
-			throw new ActivitiException("Error during lookup of JobExecutorRegistryFactory", e);
 		} catch (ResourceException e) {
 			throw new ActivitiException("Error when registering on JobExecutorRegistry", e);
 		} finally {
@@ -69,18 +67,13 @@ public class JobExecutorEE extends JobExecutor {
 		JobExecutorRegistry registry = null;
 		try {
 			synchronized (JOB_WAS_ADDED_MONITOR) {
-				registry = ((JobExecutorRegistryFactory) InitialContext.doLookup(JobExecutorRegistryFactory.JNDI))
-						.getRegistry();
+				registry = lookupJobExecutorRegistryFactory().getRegistry();
 				registry.detachJobExecutor(this);
 			}
 		} catch (IllegalArgumentException e) {
 			LOGGER.debug(
 					"Error during lookup of JobExecutorRegistryFactory when stopping job executor. Server might be in shutdown phase.",
 					e); // CPS-450 java.lang.IllegalArgumentException: JBAS011857: NamingStore ist Null
-		} catch (NamingException e) {
-			LOGGER.debug(
-					"Error during lookup of JobExecutorRegistryFactory when stopping job executor. Server might be in shutdown phase.",
-					e);
 		} catch (ResourceException e) {
 			throw new ActivitiException("Error when detaching from JobExecutorRegistry", e);
 		} finally {
@@ -126,6 +119,22 @@ public class JobExecutorEE extends JobExecutor {
 
 	public String getAcquisitionName() {
 		return acquisitionName;
+	}
+
+	public void setJobExecutorRegistryJndiName(String jobExecutorRegistryJndiName) {
+		this.jobExecutorRegistryJndiName = jobExecutorRegistryJndiName;
+	}
+
+	public String getJobExecutorRegistryJndiName() {
+		return jobExecutorRegistryJndiName;
+	}
+
+	protected JobExecutorRegistryFactory lookupJobExecutorRegistryFactory() {
+		try {
+			return (JobExecutorRegistryFactory) InitialContext.doLookup(getJobExecutorRegistryJndiName());
+		} catch (NamingException e) {
+			throw new ActivitiException("Error during lookup of JobExecutorRegistryFactory", e);
+		}
 	}
 
 	protected void setName() {
